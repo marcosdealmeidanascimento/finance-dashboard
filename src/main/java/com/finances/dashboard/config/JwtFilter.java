@@ -28,10 +28,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            String email = jwtService.extractEmail(token);
+            Long userId = jwtService.extractUserId(token);
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    email,
+                    userId,
                     null,
                     Collections.emptyList());
 

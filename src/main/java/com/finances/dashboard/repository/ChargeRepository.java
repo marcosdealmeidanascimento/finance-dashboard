@@ -8,4 +8,5 @@ import com.finances.dashboard.model.Charge;
 
 public interface ChargeRepository extends JpaRepository<Charge, Long> {
     List<Charge> findByUser_Id(Long userId);
+    List<Charge> findByUserIdAndDeletedAtIsNull(Long userId);
 }

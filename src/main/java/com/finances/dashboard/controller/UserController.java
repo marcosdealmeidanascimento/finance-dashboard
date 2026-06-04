@@ -3,6 +3,7 @@ package com.finances.dashboard.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.finances.dashboard.dto.request.UserCreateRequest;
+import com.finances.dashboard.dto.request.UserUpdateRequest;
+import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.JwtService;
 import com.finances.dashboard.service.UserService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("api/users")
@@ -32,53 +35,49 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
+    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         try {
-            String token = jwtService.extractToken(request);
-            Long userId = jwtService.extractUserId(token);
+            Long userId = (Long) authentication.getPrincipal();
             User user = userService.findById(userId);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        try {
-            User user = userService.findById(id);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(new UserResponse(user.getId(), user.getName(), user.getEmail()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         try {
             List<User> users = userService.findAll();
-            return ResponseEntity.ok(users);
+            return ResponseEntity.ok(users.stream()
+                    .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail())).toList());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest user) {
         try {
             User createdUser = userService.create(user);
-            return ResponseEntity.ok(createdUser);
+            return ResponseEntity
+                    .ok(new UserResponse(createdUser.getId(), createdUser.getName(), createdUser.getEmail()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest user,
+            Authentication authentication) {
+        Long currentUserId = (Long) authentication.getPrincipal();
+        if (!id.equals(currentUserId)) {
+            return ResponseEntity.badRequest().build();
+        }
         try {
-            User updatedUser = userService.update(user);
-            return ResponseEntity.ok(updatedUser);
+            User updatedUser = userService.update(id, user);
+            return ResponseEntity
+                    .ok(new UserResponse(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

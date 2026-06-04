@@ -3,6 +3,7 @@ package com.finances.dashboard.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +13,6 @@ import com.finances.dashboard.service.JwtService;
 import com.finances.dashboard.service.PaymentService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("api/payment")
@@ -27,10 +27,9 @@ public class PaymentController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<Payment>> getCurrentUserPayments(HttpServletRequest request) {
+    public ResponseEntity<List<Payment>> getCurrentUserPayments(Authentication authentication) {
         try {
-            String token = jwtService.extractToken(request);
-            Long userId = jwtService.extractUserId(token);
+            Long userId = (Long) authentication.getPrincipal();
             List<Payment> payments = paymentService.findByUserId(userId);
             return ResponseEntity.ok(payments);
         } catch (Exception e) {

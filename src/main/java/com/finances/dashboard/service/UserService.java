@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.finances.dashboard.dto.request.UserCreateRequest;
+import com.finances.dashboard.dto.request.UserUpdateRequest;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.UserRepository;
 
@@ -24,19 +26,29 @@ public class UserService extends BaseService<User> {
         return repository;
     }
 
-    public User create(User user) {
-        user.setPassword(
-                passwordEncoder.encode(user.getPassword()));
+    public User create(UserCreateRequest userCreateRequest) {
+        User user = new User();
+        user.setName(userCreateRequest.name());
+        if (repository.existsByEmail(userCreateRequest.email())) {
+            throw new RuntimeException("Email already exists");
+        }
+        user.setEmail(userCreateRequest.email());
+        user.setPassword(passwordEncoder.encode(userCreateRequest.password()));
         return repository.save(user);
     }
 
     @Transactional
-    public User update(User user) {
-        User existingUser = repository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + user.getId()));
-        existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+    public User update(Long id, UserUpdateRequest user) {
+        User existingUser = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        if (user.name() != null)
+            existingUser.setName(user.name());
+        if (user.email() != null)
+            existingUser.setEmail(user.email());
+        if (user.password() != null && !user.password().isBlank()) {
+            existingUser.setPassword(
+                    passwordEncoder.encode(user.password()));
+        }
         return repository.save(existingUser);
     }
 
