@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.dto.request.PaymentCreateRequest;
-import com.finances.dashboard.dto.request.PaymentPaidRequest;
 import com.finances.dashboard.dto.request.PaymentUpdateRequest;
 import com.finances.dashboard.dto.response.PaymentResponse;
 import com.finances.dashboard.enums.PaymentStatus;

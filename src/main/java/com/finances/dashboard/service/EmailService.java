@@ -1,43 +1,56 @@
 package com.finances.dashboard.service;
 
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.finances.dashboard.model.Payment;
+
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void sendHtmlEmail(String to, String subject, String text) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
 
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, true);
 
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendDueDateNotification(Payment payment) {
-        String emailTo = payment.getUser().getEmail();
-        String emailSubject = "Payment due date";
-        String emailBody = buildDueDateBody(payment);
-        sendEmail(emailTo, emailSubject, emailBody);
+        String to = payment.getUser().getEmail();
+        String subject = "Payment Due Reminder";
+        String text = buildDueDateHtml(payment);
+        sendHtmlEmail(to, subject, text);
     }
 
-    private String buildDueDateBody(Payment payment) {
-        return "Your payment for "
-                + payment.getDescription() + " - " + payment.getId()
-                + " is due on "
-                + payment.getDueDate()
-                + ". Please make the payment as soon as possible.";
+    public String buildDueDateHtml(Payment payment) {
+        Context context = new Context();
+        context.setVariable("name", payment.getUser().getName());
+        context.setVariable("description", payment.getDescription());
+        context.setVariable("id", payment.getId());
+        context.setVariable("dueDate", payment.getDueDate());
+
+        return templateEngine.process("email/due-date", context);
     }
 
 }
