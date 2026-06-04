@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.model.Charge;
+import com.finances.dashboard.model.Payment;
 import com.finances.dashboard.service.ChargeService;
 import com.finances.dashboard.service.JwtService;
+import com.finances.dashboard.service.PaymentService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,10 +26,12 @@ import jakarta.servlet.http.HttpServletRequest;
 @SecurityRequirement(name = "bearerAuth")
 public class ChargeController {
     private final ChargeService chargeService;
+    private final PaymentService paymentService;
     private final JwtService jwtService;
 
-    public ChargeController(ChargeService chargeService, JwtService jwtService) {
+    public ChargeController(ChargeService chargeService, PaymentService paymentService, JwtService jwtService) {
         this.chargeService = chargeService;
+        this.paymentService = paymentService;
         this.jwtService = jwtService;
     }
 
@@ -77,6 +81,7 @@ public class ChargeController {
     public ResponseEntity<Charge> createCharge(@RequestBody Charge charge) {
         try {
             Charge createdCharge = chargeService.save(charge);
+            paymentService.create(charge.getDescription(), createdCharge);
             return ResponseEntity.ok(createdCharge);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
