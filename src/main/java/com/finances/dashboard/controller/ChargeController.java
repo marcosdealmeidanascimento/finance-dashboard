@@ -26,49 +26,77 @@ public class ChargeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Charge> getChargeById(@PathVariable Long id) {
-        Charge charge = chargeService.findById(id);
-        return ResponseEntity.ok(charge);
+        try {
+            Charge charge = chargeService.findById(id);
+            return ResponseEntity.ok(charge);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<Charge>> getAllCharges() {
-        List<Charge> charges = chargeService.findAllActive();
-        return ResponseEntity.ok(charges);
+        try {
+            List<Charge> charges = chargeService.findAllActive();
+            return ResponseEntity.ok(charges);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Charge>> getAllChargesIncludingDeleted() {
-        List<Charge> charges = chargeService.findAll();
-        return ResponseEntity.ok(charges);
+        try {
+            List<Charge> charges = chargeService.findAll();
+            return ResponseEntity.ok(charges);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<Charge> createCharge(@RequestBody Charge charge) {
-        Charge createdCharge = chargeService.save(charge);
-        return ResponseEntity.ok(createdCharge);
+        try {
+            Charge createdCharge = chargeService.save(charge);
+            return ResponseEntity.ok(createdCharge);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Charge> updateCharge(@PathVariable Long id, @RequestBody Charge charge) {
         charge.setId(id);
-        Charge updatedCharge = chargeService.update(charge);
-        return ResponseEntity.ok(updatedCharge);
+        try {
+            Charge updatedCharge = chargeService.update(charge);
+            return ResponseEntity.ok(updatedCharge);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Charge>> getChargesByUserId(@PathVariable Long userId) {
-        List<Charge> charges = chargeService.findByUserId(userId);
-        return ResponseEntity.ok(charges);
+        try {
+            List<Charge> charges = chargeService.findByUserId(userId);
+            return ResponseEntity.ok(charges);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCharge(@PathVariable Long id) {
-        Charge charge = chargeService.findById(id);
-        if (charge == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            Charge charge = chargeService.findById(id);
+            if (charge == null) {
+                return ResponseEntity.notFound().build();
+            }
+            chargeService.softDelete(charge);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
-        chargeService.softDelete(charge);
-        return ResponseEntity.noContent().build();
     }
 
 }

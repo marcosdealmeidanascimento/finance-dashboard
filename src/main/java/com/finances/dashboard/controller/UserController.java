@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.UserService;
 
-
 @RestController
 @RequestMapping("api/users")
 public class UserController {
@@ -27,39 +26,57 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.findById(id);
-        return ResponseEntity.ok(user);
+        try {
+            User user = userService.findById(id);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.findAllActive();
-        return ResponseEntity.ok(users);
+        try {
+            List<User> users = userService.findAll();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.save(user);
-        return ResponseEntity.ok(createdUser);
+        try {
+            User createdUser = userService.create(user);
+            return ResponseEntity.ok(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         user.setId(id);
-        System.out.println("Updating user with id: " + user.getId());
-        User updatedUser = userService.update(user);
-        return ResponseEntity.ok(updatedUser);
+        try {
+            User updatedUser = userService.update(user);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        System.out.println("Deleting user with id: " + id);
-        User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            User user = userService.findById(id);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            userService.softDelete(user);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
-        userService.softDelete(user);
-        return ResponseEntity.noContent().build();
     }
 
 }
