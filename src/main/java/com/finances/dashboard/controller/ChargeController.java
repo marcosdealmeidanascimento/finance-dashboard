@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.dto.request.ChargeCreateRequest;
 import com.finances.dashboard.dto.request.ChargeUpdateRequest;
+import com.finances.dashboard.dto.response.ChargeResponse;
+import com.finances.dashboard.mapper.ChargeMapper;
 import com.finances.dashboard.model.Charge;
 import com.finances.dashboard.model.Payment;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.ChargeService;
-import com.finances.dashboard.service.JwtService;
 import com.finances.dashboard.service.PaymentService;
 import com.finances.dashboard.service.UserService;
 
@@ -32,64 +33,73 @@ public class ChargeController {
     private final ChargeService chargeService;
     private final PaymentService paymentService;
     private final UserService userService;
-    private final JwtService jwtService;
+    private final ChargeMapper mapper;
 
-    public ChargeController(ChargeService chargeService, PaymentService paymentService, UserService userService, JwtService jwtService) {
+    public ChargeController(ChargeService chargeService, PaymentService paymentService, UserService userService,
+            ChargeMapper mapper) {
         this.chargeService = chargeService;
         this.paymentService = paymentService;
         this.userService = userService;
-        this.jwtService = jwtService;
+        this.mapper = mapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Charge>> getCurrentUserCharges(Authentication authentication) {
+    public ResponseEntity<List<ChargeResponse>> getCurrentUserCharges(
+            Authentication authentication) {
+
         try {
             Long userId = (Long) authentication.getPrincipal();
             List<Charge> charges = chargeService.findByUserIdAndDeletedAtIsNull(userId);
-            return ResponseEntity.ok(charges);
+
+            List<ChargeResponse> response = charges.stream()
+                    .map(mapper::toResponse)
+                    .toList();
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Charge> getChargeById(@PathVariable Long id) {
+    public ResponseEntity<ChargeResponse> getChargeById(@PathVariable Long id) {
         try {
             Charge charge = chargeService.findById(id);
-            return ResponseEntity.ok(charge);
+            return ResponseEntity.ok(mapper.toResponse(charge));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Charge>> getAllChargesIncludingDeleted(Authentication authentication) {
+    public ResponseEntity<List<ChargeResponse>> getAllChargesIncludingDeleted(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         try {
             List<Charge> charges = chargeService.findByUserId(userId);
-            return ResponseEntity.ok(charges);
+            return ResponseEntity.ok(charges.stream().map(mapper::toResponse).toList());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<Charge> createCharge(@RequestBody ChargeCreateRequest charge, Authentication authentication) {
+    public ResponseEntity<ChargeResponse> createCharge(@RequestBody ChargeCreateRequest charge, Authentication authentication) {
         try {
             User user = userService.findById((Long) authentication.getPrincipal());
             Charge createdCharge = chargeService.create(charge, user);
             paymentService.create(charge.description(), createdCharge);
-            return ResponseEntity.ok(createdCharge);
+            return ResponseEntity.ok(mapper.toResponse(createdCharge));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Charge> updateCharge(@PathVariable Long id, @RequestBody ChargeUpdateRequest charge) {
+    public ResponseEntity<ChargeResponse> updateCharge(@PathVariable Long id, @RequestBody ChargeUpdateRequest charge) {
         try {
             Charge updatedCharge = chargeService.update(id, charge);
-            return ResponseEntity.ok(updatedCharge);
+            return ResponseEntity.ok(mapper.toResponse(updatedCharge));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -105,9 +115,8 @@ public class ChargeController {
             Payment payment = paymentService.findByChargeId(id);
             if (payment != null) {
                 paymentService.markAsCanceled(payment.getId());
+                paymentService.softDelete(payment);
             }
-            paymentService.softDelete(payment);
-            paymentService.markAsCanceled(payment.getId());
             chargeService.softDelete(charge);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

@@ -17,7 +17,6 @@ import com.finances.dashboard.dto.request.UserCreateRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
 import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.model.User;
-import com.finances.dashboard.service.JwtService;
 import com.finances.dashboard.service.UserService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,11 +26,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
     private final UserService userService;
-    private final JwtService jwtService;
 
-    public UserController(UserService userService, JwtService jwtService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
     }
 
     @GetMapping("/me")
