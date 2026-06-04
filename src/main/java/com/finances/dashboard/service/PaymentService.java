@@ -26,6 +26,18 @@ public class PaymentService extends BaseService<Payment> {
         return repository.findByUser_Id(userId);
     }
 
+    public List<Payment> findByUserIdAndDeletedAtIsNull(Long userId) {
+        return repository.findByUser_IdAndDeletedAtIsNull(userId);
+    }
+
+    public Payment findByChargeId(Long chargeId) {
+        return repository.findByCharge_Id(chargeId).orElse(null);
+    }
+
+    public List<Payment> findByUser_idAndStatus(Long userId, PaymentStatus status) {
+        return repository.findByUser_idAndStatus(userId, status);
+    }
+
     public Payment create(String description, Charge charge) {
         Payment payment = new Payment();
         payment.setStatus(PaymentStatus.PENDING);

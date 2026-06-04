@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.finances.dashboard.dto.request.ChargeCreateRequest;
 import com.finances.dashboard.dto.request.ChargeUpdateRequest;
 import com.finances.dashboard.model.Charge;
+import com.finances.dashboard.model.Payment;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.ChargeService;
 import com.finances.dashboard.service.JwtService;
@@ -40,7 +41,7 @@ public class ChargeController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<List<Charge>> getCurrentUserCharges(Authentication authentication) {
         try {
             Long userId = (Long) authentication.getPrincipal();
@@ -101,6 +102,12 @@ public class ChargeController {
             if (charge == null) {
                 return ResponseEntity.notFound().build();
             }
+            Payment payment = paymentService.findByChargeId(id);
+            if (payment != null) {
+                paymentService.markAsCanceled(payment.getId());
+            }
+            paymentService.softDelete(payment);
+            paymentService.markAsCanceled(payment.getId());
             chargeService.softDelete(charge);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
