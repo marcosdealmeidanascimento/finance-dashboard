@@ -36,4 +36,8 @@ public class Payment extends DomainEntity {
         return this.getDueDate().isAfter(LocalDate.now().minusDays(1)) && this.getDueDate().isBefore(LocalDate.now().plusDays(2));
     }
 
+    public Boolean isRecurring() {
+        return this.getRecurring();
+    }
+
 }

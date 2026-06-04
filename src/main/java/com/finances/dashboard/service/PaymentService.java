@@ -55,11 +55,16 @@ public class PaymentService extends BaseService<Payment> {
         if (existingPayment.getDeletedAt() != null) {
             throw new RuntimeException("Payment is deleted and cannot be updated.");
         }
-        if (payment.description() != null) existingPayment.setDescription(payment.description());
-        if (payment.method() != null) existingPayment.setMethod(payment.method());
-        if (payment.amount() != null) existingPayment.setAmount(payment.amount());
-        if (payment.dueDate() != null) existingPayment.setDueDate(payment.dueDate());
-        if (payment.recurring() != null) existingPayment.setRecurring(payment.recurring());
+        if (payment.description() != null)
+            existingPayment.setDescription(payment.description());
+        if (payment.method() != null)
+            existingPayment.setMethod(payment.method());
+        if (payment.amount() != null)
+            existingPayment.setAmount(payment.amount());
+        if (payment.dueDate() != null)
+            existingPayment.setDueDate(payment.dueDate());
+        if (payment.recurring() != null)
+            existingPayment.setRecurring(payment.recurring());
         return repository.save(existingPayment);
     }
 
@@ -68,6 +73,17 @@ public class PaymentService extends BaseService<Payment> {
         Payment existingPayment = repository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id: " + paymentId));
         existingPayment.setStatus(PaymentStatus.PAID);
+        if (existingPayment.isRecurring()) {
+            Payment newPayment = new Payment();
+            newPayment.setDescription(existingPayment.getDescription());
+            newPayment.setAmount(existingPayment.getAmount());
+            newPayment.setDueDate(existingPayment.getDueDate().plusMonths(1));
+            newPayment.setRecurring(existingPayment.isRecurring());
+            newPayment.setMethod(existingPayment.getMethod());
+            newPayment.setStatus(PaymentStatus.PENDING);
+            newPayment.setUser(existingPayment.getUser());
+            repository.save(newPayment);
+        }
         return repository.save(existingPayment);
     }
 
@@ -88,7 +104,8 @@ public class PaymentService extends BaseService<Payment> {
     }
 
     public List<Payment> listCloseToDueDatePayments() {
-        List<Payment> payments = repository.findByStatus(PaymentStatus.PENDING).stream().filter(p -> p.isCloseToDueDate()).toList();
+        List<Payment> payments = repository.findByStatus(PaymentStatus.PENDING).stream()
+                .filter(p -> p.isCloseToDueDate()).toList();
         return payments;
     }
 

@@ -81,8 +81,20 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<List<PaymentResponse>> getPendingPayments(Authentication authentication) {
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            List<Payment> payments = paymentService.findByUser_idAndStatus(userId, PaymentStatus.PENDING);
+            return ResponseEntity.ok(payments.stream().map(paymentMapper::toResponse).toList());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentCreateRequest payment, Authentication authentication) {
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentCreateRequest payment,
+            Authentication authentication) {
         try {
             Long userId = (Long) authentication.getPrincipal();
             User user = userService.findById(userId);
@@ -94,7 +106,8 @@ public class PaymentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long id, @RequestBody PaymentUpdateRequest payment) {
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long id,
+            @RequestBody PaymentUpdateRequest payment) {
         try {
             Payment updatedPayment = paymentService.update(id, payment);
             return ResponseEntity.ok(paymentMapper.toResponse(updatedPayment));
@@ -112,6 +125,21 @@ public class PaymentController {
                 return ResponseEntity.badRequest().build();
             }
             payment = paymentService.markAsPaid(id);
+            return ResponseEntity.ok(paymentMapper.toResponse(payment));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/mark-cancelled/{id}")
+    public ResponseEntity<PaymentResponse> markPaymentCancelled(@PathVariable Long id, Authentication authentication) {
+        try {
+            Long userId = (Long) authentication.getPrincipal();
+            Payment payment = paymentService.findById(id);
+            if (!payment.getUser().getId().equals(userId)) {
+                return ResponseEntity.badRequest().build();
+            }
+            payment = paymentService.markAsCanceled(id);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
