@@ -19,7 +19,7 @@ public class Charge extends DomainEntity {
     private Boolean recurring;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
 }

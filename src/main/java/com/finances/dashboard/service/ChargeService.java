@@ -33,9 +33,7 @@ public class ChargeService extends BaseService<Charge> {
     }
 
     public List<Charge> findByUserId(Long userId) {
-        return repository.findAll().stream()
-                .filter(charge -> charge.getUser() != null && charge.getUser().getId().equals(userId))
-                .toList();
+        return repository.findByUser_Id(userId);
     }
 
 }

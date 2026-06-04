@@ -3,6 +3,7 @@ package com.finances.dashboard.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,12 @@ public class ChargeController {
 
     public ChargeController(ChargeService chargeService) {
         this.chargeService = chargeService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Charge> getChargeById(@PathVariable Long id) {
+        Charge charge = chargeService.findById(id);
+        return ResponseEntity.ok(charge);
     }
 
     @GetMapping
@@ -52,6 +59,16 @@ public class ChargeController {
     public ResponseEntity<List<Charge>> getChargesByUserId(@PathVariable Long userId) {
         List<Charge> charges = chargeService.findByUserId(userId);
         return ResponseEntity.ok(charges);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCharge(@PathVariable Long id) {
+        Charge charge = chargeService.findById(id);
+        if (charge == null) {
+            return ResponseEntity.notFound().build();
+        }
+        chargeService.softDelete(charge);
+        return ResponseEntity.noContent().build();
     }
 
 }
