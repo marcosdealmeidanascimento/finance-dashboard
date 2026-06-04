@@ -34,9 +34,9 @@ public class EmailService {
 
     private String buildDueDateBody(Payment payment) {
         return "Your payment for "
-                + payment.getCharge().getDescription()
+                + payment.getDescription() + " - " + payment.getId()
                 + " is due on "
-                + payment.getCharge().getDueDate()
+                + payment.getDueDate()
                 + ". Please make the payment as soon as possible.";
     }
 

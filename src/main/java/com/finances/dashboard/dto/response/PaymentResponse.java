@@ -14,7 +14,6 @@ public record PaymentResponse(
         Boolean recurring,
         String method,
         PaymentStatus status,
-        ChargeResponse charge,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt) {

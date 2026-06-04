@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.finances.dashboard.dto.request.PaymentCreateRequest;
+import com.finances.dashboard.dto.request.PaymentUpdateRequest;
 import com.finances.dashboard.enums.PaymentStatus;
-import com.finances.dashboard.model.Charge;
 import com.finances.dashboard.model.Payment;
+import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.PaymentRepository;
 
 import jakarta.transaction.Transactional;
@@ -30,29 +32,34 @@ public class PaymentService extends BaseService<Payment> {
         return repository.findByUser_IdAndDeletedAtIsNull(userId);
     }
 
-    public Payment findByChargeId(Long chargeId) {
-        return repository.findByCharge_Id(chargeId).orElse(null);
-    }
-
     public List<Payment> findByUser_idAndStatus(Long userId, PaymentStatus status) {
         return repository.findByUser_idAndStatus(userId, status);
     }
 
-    public Payment create(String description, Charge charge) {
+    public Payment create(PaymentCreateRequest paymentRequest, User user) {
         Payment payment = new Payment();
+        payment.setDescription(paymentRequest.description());
+        payment.setAmount(paymentRequest.amount());
+        payment.setDueDate(paymentRequest.dueDate());
+        payment.setRecurring(paymentRequest.recurring());
+        payment.setMethod(paymentRequest.method());
         payment.setStatus(PaymentStatus.PENDING);
-        payment.setDescription(description);
-        payment.setCharge(charge);
-        payment.setUser(charge.getUser());
+        payment.setUser(user);
         return repository.save(payment);
     }
 
     @Transactional
-    public Payment update(Payment payment) {
-        Payment existingPayment = repository.findById(payment.getId())
-                .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payment.getId()));
-        existingPayment.setDescription(payment.getDescription());
-        existingPayment.setMethod(payment.getMethod());
+    public Payment update(Long id, PaymentUpdateRequest payment) {
+        Payment existingPayment = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id));
+        if (existingPayment.getDeletedAt() != null) {
+            throw new RuntimeException("Payment is deleted and cannot be updated.");
+        }
+        if (payment.description() != null) existingPayment.setDescription(payment.description());
+        if (payment.method() != null) existingPayment.setMethod(payment.method());
+        if (payment.amount() != null) existingPayment.setAmount(payment.amount());
+        if (payment.dueDate() != null) existingPayment.setDueDate(payment.dueDate());
+        if (payment.recurring() != null) existingPayment.setRecurring(payment.recurring());
         return repository.save(existingPayment);
     }
 

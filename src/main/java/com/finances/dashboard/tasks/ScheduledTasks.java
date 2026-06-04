@@ -31,7 +31,7 @@ public class ScheduledTasks {
         log.info("The time is now {}", dateFormat.format(System.currentTimeMillis()));
     }
 
-    @Scheduled(cron = "0 0 14 * * *")
+    @Scheduled(cron = "0 0 15 * * *")
     public void validatePayments() {
         log.info("Validating payments");
         List<Payment> payments = paymentService.listCloseToDueDatePayments();

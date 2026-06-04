@@ -1,5 +1,6 @@
 package com.finances.dashboard.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
@@ -20,20 +21,19 @@ import jakarta.persistence.Enumerated;
 public class Payment extends DomainEntity {
     private String description;
     private String method;
+    private Boolean recurring;
+    private BigDecimal amount;
+    private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-
-    @OneToOne
-    @JoinColumn(name = "charge_id")
-    private Charge charge;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     public Boolean isCloseToDueDate() {
-        return this.charge.getDueDate().isAfter(LocalDate.now().minusDays(1)) && this.charge.getDueDate().isBefore(LocalDate.now().plusDays(2));
+        return this.getDueDate().isAfter(LocalDate.now().minusDays(1)) && this.getDueDate().isBefore(LocalDate.now().plusDays(2));
     }
 
 }
