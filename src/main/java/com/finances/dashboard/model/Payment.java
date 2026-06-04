@@ -1,5 +1,7 @@
 package com.finances.dashboard.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -29,5 +31,9 @@ public class Payment extends DomainEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Boolean isCloseToDueDate() {
+        return this.charge.getDueDate().isAfter(LocalDate.now().minusDays(1)) && this.charge.getDueDate().isBefore(LocalDate.now().plusDays(2));
+    }
 
 }

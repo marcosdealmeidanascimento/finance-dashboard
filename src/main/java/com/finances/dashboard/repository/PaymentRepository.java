@@ -13,4 +13,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findByUser_IdAndDeletedAtIsNull(Long userId);
     Optional<Payment> findByCharge_Id(Long id);
     List<Payment> findByUser_idAndStatus(Long userId, PaymentStatus status);
+    List<Payment> findByStatus(PaymentStatus status);
 }

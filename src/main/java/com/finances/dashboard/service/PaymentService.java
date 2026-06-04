@@ -77,8 +77,13 @@ public class PaymentService extends BaseService<Payment> {
     public Payment markAsCanceled(Long paymentId) {
         Payment existingPayment = repository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id: " + paymentId));
-        existingPayment.setStatus(PaymentStatus.CANCELED);
+        existingPayment.setStatus(PaymentStatus.CANCELLED);
         return repository.save(existingPayment);
+    }
+
+    public List<Payment> listCloseToDueDatePayments() {
+        List<Payment> payments = repository.findByStatus(PaymentStatus.PENDING).stream().filter(p -> p.isCloseToDueDate()).toList();
+        return payments;
     }
 
 }
