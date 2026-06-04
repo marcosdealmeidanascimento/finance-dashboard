@@ -50,6 +50,16 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long id) {
+        try {
+            Payment payment = paymentService.findById(id);
+            return ResponseEntity.ok(paymentMapper.toResponse(payment));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/paid")
     public ResponseEntity<List<PaymentResponse>> getPaidPayments(Authentication authentication) {
         try {
@@ -95,15 +105,14 @@ public class PaymentController {
     }
 
     @PostMapping("/mark-paid/{id}")
-    public ResponseEntity<PaymentResponse> markPaymentPaid(@PathVariable Long id,
-            @RequestBody PaymentPaidRequest paymentPaidRequest, Authentication authentication) {
+    public ResponseEntity<PaymentResponse> markPaymentPaid(@PathVariable Long id, Authentication authentication) {
         try {
             Long userId = (Long) authentication.getPrincipal();
             Payment payment = paymentService.findById(id);
             if (!payment.getUser().getId().equals(userId)) {
                 return ResponseEntity.badRequest().build();
             }
-            payment = paymentService.markAsPaid(id, paymentPaidRequest.method());
+            payment = paymentService.markAsPaid(id);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

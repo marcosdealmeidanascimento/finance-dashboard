@@ -64,10 +64,9 @@ public class PaymentService extends BaseService<Payment> {
     }
 
     @Transactional
-    public Payment markAsPaid(Long paymentId, String method) {
+    public Payment markAsPaid(Long paymentId) {
         Payment existingPayment = repository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id: " + paymentId));
-        existingPayment.setMethod(method);
         existingPayment.setStatus(PaymentStatus.PAID);
         return repository.save(existingPayment);
     }
