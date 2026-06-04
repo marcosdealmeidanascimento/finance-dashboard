@@ -14,14 +14,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.model.Charge;
 import com.finances.dashboard.service.ChargeService;
+import com.finances.dashboard.service.JwtService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("api/charges")
+@SecurityRequirement(name = "bearerAuth")
 public class ChargeController {
     private final ChargeService chargeService;
+    private final JwtService jwtService;
 
-    public ChargeController(ChargeService chargeService) {
+    public ChargeController(ChargeService chargeService, JwtService jwtService) {
         this.chargeService = chargeService;
+        this.jwtService = jwtService;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<Charge>> getCurrentUserCharges(HttpServletRequest request) {
+        try {
+            String token = jwtService.extractToken(request);
+            Long userId = jwtService.extractUserId(token);
+            List<Charge> charges = chargeService.findByUserId(userId);
+            return ResponseEntity.ok(charges);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/{id}")

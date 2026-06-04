@@ -12,6 +12,7 @@ import com.finances.dashboard.model.User;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
@@ -33,6 +34,14 @@ public class JwtService {
                         new Date(System.currentTimeMillis() + 86400000))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        throw new RuntimeException("JWT token is missing or invalid");
     }
 
     public String extractEmail(String token) {
