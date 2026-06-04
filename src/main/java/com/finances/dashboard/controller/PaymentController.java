@@ -1,15 +1,17 @@
 package com.finances.dashboard.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.dto.request.PaymentCreateRequest;
@@ -39,14 +41,17 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PaymentResponse>> getCurrentUserPayments(Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            List<Payment> payments = paymentService.findByUserIdAndDeletedAtIsNull(userId);
-            return ResponseEntity.ok(payments.stream().map(paymentMapper::toResponse).toList());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Page<PaymentResponse>> getCurrentUserPayments(
+            @RequestParam(required = false) PaymentStatus status,
+            Pageable pageable,
+            Authentication authentication) {
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        Page<Payment> payments = paymentService.findByUserAndStatus(userId, status, pageable);
+
+        return ResponseEntity.ok(
+                payments.map(paymentMapper::toResponse));
     }
 
     @GetMapping("/{id}")
@@ -54,39 +59,6 @@ public class PaymentController {
         try {
             Payment payment = paymentService.findById(id);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("/paid")
-    public ResponseEntity<List<PaymentResponse>> getPaidPayments(Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            List<Payment> payments = paymentService.findByUser_idAndStatus(userId, PaymentStatus.PAID);
-            return ResponseEntity.ok(payments.stream().map(paymentMapper::toResponse).toList());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("/cancelled")
-    public ResponseEntity<List<PaymentResponse>> getCancelledPayments(Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            List<Payment> payments = paymentService.findByUser_idAndStatus(userId, PaymentStatus.CANCELLED);
-            return ResponseEntity.ok(payments.stream().map(paymentMapper::toResponse).toList());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("/pending")
-    public ResponseEntity<List<PaymentResponse>> getPendingPayments(Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            List<Payment> payments = paymentService.findByUser_idAndStatus(userId, PaymentStatus.PENDING);
-            return ResponseEntity.ok(payments.stream().map(paymentMapper::toResponse).toList());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -141,6 +113,17 @@ public class PaymentController {
             }
             payment = paymentService.markAsCanceled(id);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+        try {
+            Payment payment = paymentService.findById(id);
+            paymentService.softDelete(payment);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

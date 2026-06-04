@@ -3,6 +3,8 @@ package com.finances.dashboard.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.PaymentCreateRequest;
@@ -24,16 +26,16 @@ public class PaymentService extends BaseService<Payment> {
         return repository;
     }
 
-    public List<Payment> findByUserId(Long userId) {
-        return repository.findByUser_Id(userId);
-    }
+    public Page<Payment> findByUserAndStatus(
+            Long userId,
+            PaymentStatus status,
+            Pageable pageable) {
 
-    public List<Payment> findByUserIdAndDeletedAtIsNull(Long userId) {
-        return repository.findByUser_IdAndDeletedAtIsNull(userId);
-    }
+        if (status != null) {
+            return repository.findByUser_IdAndStatus(userId, status, pageable);
+        }
 
-    public List<Payment> findByUser_idAndStatus(Long userId, PaymentStatus status) {
-        return repository.findByUser_idAndStatus(userId, status);
+        return repository.findByUser_Id(userId, pageable);
     }
 
     public Payment create(PaymentCreateRequest paymentRequest, User user) {
@@ -104,7 +106,7 @@ public class PaymentService extends BaseService<Payment> {
     }
 
     public List<Payment> listCloseToDueDatePayments() {
-        List<Payment> payments = repository.findByStatus(PaymentStatus.PENDING).stream()
+        List<Payment> payments = repository.findByStatusAndDeletedAtIsNull(PaymentStatus.PENDING).stream()
                 .filter(p -> p.isCloseToDueDate()).toList();
         return payments;
     }
