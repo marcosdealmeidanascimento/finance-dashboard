@@ -2,6 +2,7 @@ package com.finances.dashboard.service;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -38,6 +39,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendMonthlySummaryNotification(SummaryResponse summary, UserResponse user) {
         String to = user.email();
         String subject = "Monthly Summary";
@@ -55,6 +57,7 @@ public class EmailService {
         return templateEngine.process("email/monthly-summary", context);
     }
 
+    @Async
     public void sendDueDateNotification(Payment payment) {
         String to = payment.getUser().getEmail();
         String subject = "Payment Due Reminder";

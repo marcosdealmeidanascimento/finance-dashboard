@@ -55,22 +55,12 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 0 1 * *")
     public void sendMonthlySummary() {
         log.info("Sending monthly summary");
-        List<SummaryUserResponse> summary = summaryService.getSummaryByUser();
-        for (SummaryUserResponse summaryUserResponse : summary) {
-            try {
-                emailService.sendMonthlySummaryNotification(
-                        summaryUserResponse.summary(),
-                        summaryUserResponse.user());
-
-                log.info("Summary sent to {}",
-                        summaryUserResponse.user().email());
-
-            } catch (Exception e) {
-                log.error(
-                        "Failed to send summary to {}",
-                        summaryUserResponse.user().email(),
-                        e);
-            }
+        List<SummaryUserResponse> summaries = summaryService.getSummaryByUser();
+        for (SummaryUserResponse summary : summaries) {
+            emailService.sendMonthlySummaryNotification(
+                    summary.summary(),
+                    summary.user());
         }
+        log.info("All emails queued");
     }
 }
