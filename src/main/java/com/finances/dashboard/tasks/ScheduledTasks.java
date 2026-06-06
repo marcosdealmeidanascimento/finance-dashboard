@@ -32,7 +32,7 @@ public class ScheduledTasks {
     }
 
     @Async
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 60000)
     public void reportCurrentThreadName() {
         log.info("Thread name is {}", Thread.currentThread().getName());
     }
