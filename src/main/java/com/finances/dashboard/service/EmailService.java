@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.finances.dashboard.dto.response.SummaryResponse;
+import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.model.Payment;
 
 import jakarta.mail.internet.MimeMessage;
@@ -36,6 +38,23 @@ public class EmailService {
         }
     }
 
+    public void sendMonthlySummaryNotification(SummaryResponse summary, UserResponse user) {
+        String to = user.email();
+        String subject = "Monthly Summary";
+        String text = buildMonthlySummaryHtml(summary, user);
+        sendHtmlEmail(to, subject, text);
+    }
+
+    public String buildMonthlySummaryHtml(SummaryResponse summary, UserResponse user) {
+        Context context = new Context();
+        context.setVariable("name", user.name());
+        context.setVariable("totalIncome", summary.totalIncome());
+        context.setVariable("totalPayments", summary.totalPayments());
+        context.setVariable("balance", summary.balance());
+
+        return templateEngine.process("email/monthly-summary", context);
+    }
+
     public void sendDueDateNotification(Payment payment) {
         String to = payment.getUser().getEmail();
         String subject = "Payment Due Reminder";
@@ -47,6 +66,7 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("name", payment.getUser().getName());
         context.setVariable("description", payment.getDescription());
+        context.setVariable("amount", payment.getAmount());
         context.setVariable("id", payment.getId());
         context.setVariable("dueDate", payment.getDueDate());
 

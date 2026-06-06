@@ -1,5 +1,6 @@
 package com.finances.dashboard.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class IncomeService extends BaseService<Income> {
 
     public Page<Income> findByUser_Id(Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return repository.findByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(userId, startDate, endDate, pageable);
+    }
+
+    public BigDecimal sumByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        return repository.sumByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(userId, startDate, endDate);
     }
 
     public Income create(IncomeCreateRequest incomeRequest, User user) {

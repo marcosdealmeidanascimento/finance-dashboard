@@ -112,6 +112,7 @@ public class PaymentController {
                 return ResponseEntity.badRequest().build();
             }
             payment = paymentService.markAsCanceled(id);
+            paymentService.softDelete(payment);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

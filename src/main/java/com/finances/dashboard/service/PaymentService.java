@@ -1,5 +1,7 @@
 package com.finances.dashboard.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,10 @@ public class PaymentService extends BaseService<Payment> {
         }
 
         return repository.findByUser_Id(userId, pageable);
+    }
+
+    public BigDecimal sumByUser_IdAndDeletedAtIsNullAndDueDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        return repository.sumByUser_IdAndDeletedAtIsNullAndDueDateBetween(userId, startDate, endDate);
     }
 
     public Payment create(PaymentCreateRequest paymentRequest, User user) {
