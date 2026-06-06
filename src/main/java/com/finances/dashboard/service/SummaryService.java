@@ -2,17 +2,17 @@ package com.finances.dashboard.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.response.SummaryResponse;
 import com.finances.dashboard.dto.response.SummaryUserResponse;
+import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.mapper.UserMapper;
-import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.IncomeRepository;
 import com.finances.dashboard.repository.PaymentRepository;
+import com.finances.dashboard.repository.SummaryRepository;
 import com.finances.dashboard.repository.UserRepository;
 
 @Service
@@ -20,13 +20,16 @@ public class SummaryService {
     private final IncomeRepository incomeRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final SummaryRepository summaryRepository;
     private final UserMapper userMapper;
 
     public SummaryService(IncomeRepository incomeRepository,
-            PaymentRepository paymentRepository, UserRepository userRepository, UserMapper userMapper) {
+            PaymentRepository paymentRepository, UserRepository userRepository, SummaryRepository summaryRepository,
+            UserMapper userMapper) {
         this.incomeRepository = incomeRepository;
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.summaryRepository = summaryRepository;
         this.userMapper = userMapper;
     }
 
@@ -48,20 +51,27 @@ public class SummaryService {
         LocalDate startDate = today.minusMonths(1).withDayOfMonth(1);
         LocalDate endDate = today.withDayOfMonth(1).minusDays(1);
 
-        List<User> users = userRepository.findAllAndDeletedAtIsNull();
-        List<SummaryUserResponse> response = new ArrayList<>();
+        return summaryRepository
+                .findAllSummaries(startDate, endDate)
+                .stream()
+                .map(p -> {
 
-        for (User user : users) {
-            SummaryResponse summary = getSummary(
-                    user.getId(),
-                    startDate,
-                    endDate);
+                    SummaryResponse summary = new SummaryResponse(
+                            p.totalIncome(),
+                            p.totalPayments(),
+                            p.totalIncome()
+                                    .subtract(p.totalPayments()));
 
-            response.add(
-                    new SummaryUserResponse(summary, userMapper.toResponse(user)));
-        }
+                    UserResponse user = new UserResponse(
+                            p.userId(),
+                            p.name(),
+                            p.email());
 
-        return response;
+                    return new SummaryUserResponse(
+                            summary,
+                            user);
+                })
+                .toList();
     }
 
 }

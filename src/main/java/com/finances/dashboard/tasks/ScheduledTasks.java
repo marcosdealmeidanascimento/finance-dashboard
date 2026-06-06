@@ -52,7 +52,8 @@ public class ScheduledTasks {
     }
 
     @Async
-    @Scheduled(cron = "0 0 0 1 * *")
+    // @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "0 39 18 * * *")
     public void sendMonthlySummary() {
         log.info("Sending monthly summary");
         List<SummaryUserResponse> summaries = summaryService.getSummaryByUser();
