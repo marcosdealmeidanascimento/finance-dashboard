@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.finances.dashboard.dto.request.UserCreateRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
 import com.finances.dashboard.dto.response.UserResponse;
+import com.finances.dashboard.mapper.UserMapper;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.UserService;
 
@@ -26,9 +27,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/me")
@@ -36,7 +39,7 @@ public class UserController {
         try {
             Long userId = (Long) authentication.getPrincipal();
             User user = userService.findById(userId);
-            return ResponseEntity.ok(new UserResponse(user.getId(), user.getName(), user.getEmail()));
+            return ResponseEntity.ok(userMapper.toResponse(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -46,8 +49,7 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         try {
             List<User> users = userService.findAll();
-            return ResponseEntity.ok(users.stream()
-                    .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail())).toList());
+            return ResponseEntity.ok(users.stream().map(userMapper::toResponse).toList());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -58,7 +60,7 @@ public class UserController {
         try {
             User createdUser = userService.create(user);
             return ResponseEntity
-                    .ok(new UserResponse(createdUser.getId(), createdUser.getName(), createdUser.getEmail()));
+                    .ok(userMapper.toResponse(createdUser));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -74,7 +76,7 @@ public class UserController {
         try {
             User updatedUser = userService.update(id, user);
             return ResponseEntity
-                    .ok(new UserResponse(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail()));
+                    .ok(userMapper.toResponse(updatedUser));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

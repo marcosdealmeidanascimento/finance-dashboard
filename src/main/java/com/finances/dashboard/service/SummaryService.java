@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.response.SummaryResponse;
 import com.finances.dashboard.dto.response.SummaryUserResponse;
-import com.finances.dashboard.dto.response.UserResponse;
+import com.finances.dashboard.mapper.UserMapper;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.IncomeRepository;
 import com.finances.dashboard.repository.PaymentRepository;
@@ -20,12 +20,14 @@ public class SummaryService {
     private final IncomeRepository incomeRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public SummaryService(IncomeRepository incomeRepository,
-            PaymentRepository paymentRepository, UserRepository userRepository) {
+            PaymentRepository paymentRepository, UserRepository userRepository, UserMapper userMapper) {
         this.incomeRepository = incomeRepository;
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     public SummaryResponse getSummary(Long userId, LocalDate startDate, LocalDate endDate) {
@@ -51,7 +53,7 @@ public class SummaryService {
                     LocalDate.now());
 
             response.add(
-                    new SummaryUserResponse(summary, new UserResponse(user.getId(), user.getName(), user.getEmail())));
+                    new SummaryUserResponse(summary, userMapper.toResponse(user)));
         }
 
         return response;
