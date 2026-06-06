@@ -1,5 +1,5 @@
 package com.finances.dashboard.dto.response;
 
-public record AuthResponse(Object token) {
+public record AuthResponse(String accessToken, String refreshToken) {
 
 }

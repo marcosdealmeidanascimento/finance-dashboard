@@ -2,6 +2,7 @@ package com.finances.dashboard.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -31,9 +32,13 @@ public class JwtService {
                 .subject(user.getEmail())
                 .issuedAt(new Date())
                 .expiration(
-                        new Date(System.currentTimeMillis() + 86400000))
+                        new Date(System.currentTimeMillis() + 15 * 60 * 1000L))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
     }
 
     public String extractToken(HttpServletRequest request) {
