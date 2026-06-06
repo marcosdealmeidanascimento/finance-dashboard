@@ -32,25 +32,30 @@ public class SummaryService {
 
     public SummaryResponse getSummary(Long userId, LocalDate startDate, LocalDate endDate) {
         BigDecimal totalIncome = incomeRepository.sumByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(userId,
-                startDate, endDate) != null ? incomeRepository.sumByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(userId,
-                startDate, endDate) : BigDecimal.ZERO;
+                startDate, endDate) != null
+                        ? incomeRepository.sumByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(userId,
+                                startDate, endDate)
+                        : BigDecimal.ZERO;
         BigDecimal totalPayments = paymentRepository.sumByUser_IdAndDeletedAtIsNullAndDueDateBetween(userId, startDate,
                 endDate) != null ? paymentRepository.sumByUser_IdAndDeletedAtIsNullAndDueDateBetween(userId, startDate,
-                endDate) : BigDecimal.ZERO;
+                        endDate) : BigDecimal.ZERO;
         BigDecimal balance = totalIncome.subtract(totalPayments);
         return new SummaryResponse(totalIncome, totalPayments, balance);
     }
 
     public List<SummaryUserResponse> getSummaryByUser() {
-        List<User> users = userRepository.findAllAndDeletedAtIsNull();
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusMonths(1).withDayOfMonth(1);
+        LocalDate endDate = today.withDayOfMonth(1).minusDays(1);
 
+        List<User> users = userRepository.findAllAndDeletedAtIsNull();
         List<SummaryUserResponse> response = new ArrayList<>();
 
         for (User user : users) {
             SummaryResponse summary = getSummary(
                     user.getId(),
-                    LocalDate.now().minusMonths(1),
-                    LocalDate.now());
+                    startDate,
+                    endDate);
 
             response.add(
                     new SummaryUserResponse(summary, userMapper.toResponse(user)));
