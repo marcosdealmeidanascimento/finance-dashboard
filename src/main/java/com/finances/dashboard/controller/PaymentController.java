@@ -56,13 +56,13 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long id) {
-        try {
-            Payment payment = paymentService.findById(id);
-            return ResponseEntity.ok(paymentMapper.toResponse(payment));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable Long id, Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        Payment payment = paymentService.findById(id);
+        if (!payment.getUser().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        return ResponseEntity.ok(paymentMapper.toResponse(payment));
     }
 
     @PostMapping

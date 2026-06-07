@@ -50,6 +50,16 @@ public class IncomeController {
         return ResponseEntity.ok(incomes.map(incomeMapper::toResponse));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<IncomeResponse> getIncome(@PathVariable Long id, Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        Income income = incomeService.findById(id);
+        if (!income.getUser().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(incomeMapper.toResponse(income));
+    }
+
     @PostMapping
     public ResponseEntity<IncomeResponse> createIncome(@RequestBody IncomeCreateRequest incomeRequest,
             Authentication authentication) {
