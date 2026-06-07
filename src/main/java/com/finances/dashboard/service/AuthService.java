@@ -40,6 +40,12 @@ public class AuthService {
         String accessToken = jwtService.generateToken(user);
         String refreshTokenValue = jwtService.generateRefreshToken();
 
+        RefreshToken existingRefreshToken = refreshTokenRepository.findByUser(user).orElse(null);
+        if (existingRefreshToken != null) {
+            refreshTokenRepository.delete(existingRefreshToken);
+        }
+
+
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setToken(refreshTokenValue);
