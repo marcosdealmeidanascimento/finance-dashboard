@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.finances.dashboard.exception.ResourceNotFoundException;
 import com.finances.dashboard.model.DomainEntity;
 
 import jakarta.transaction.Transactional;
@@ -27,13 +28,13 @@ public abstract class BaseService <T extends DomainEntity> {
 
     public T findById(Long id) {
         return getRepository().findById(id)
-                .orElseThrow(() -> new RuntimeException("Entity not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Entity not found with id: " + id));
     }
 
     @Transactional
     public void softDelete(T entity) {
         T entityToDelete = getRepository().findById(entity.getId())
-                .orElseThrow(() -> new RuntimeException("Entity not found with id: " + entity.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Entity not found with id: " + entity.getId()));
         entityToDelete.softDelete();
     }
 

@@ -2,6 +2,7 @@ package com.finances.dashboard.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -105,33 +106,26 @@ public class PaymentController {
 
     @PostMapping("/mark-cancelled/{id}")
     public ResponseEntity<PaymentResponse> markPaymentCancelled(@PathVariable Long id, Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            Payment payment = paymentService.findById(id);
-            if (!payment.getUser().getId().equals(userId)) {
-                return ResponseEntity.badRequest().build();
-            }
-            payment = paymentService.markAsCanceled(id);
-            paymentService.softDelete(payment);
-            return ResponseEntity.ok(paymentMapper.toResponse(payment));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        Long userId = (Long) authentication.getPrincipal();
+        Payment payment = paymentService.findById(id);
+        if (!payment.getUser().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         }
+        payment = paymentService.markAsCanceled(id);
+        paymentService.softDelete(payment);
+        return ResponseEntity.ok(paymentMapper.toResponse(payment));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePayment(@PathVariable Long id, Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            Payment payment = paymentService.findById(id);
-            if (!payment.getUser().getId().equals(userId)) {
-                return ResponseEntity.badRequest().build();
-            }
-            paymentService.softDelete(payment);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        Long userId = (Long) authentication.getPrincipal();
+        Payment payment = paymentService.findById(id);
+        if (!payment.getUser().getId().equals(userId)) {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        paymentService.softDelete(payment);
+        return ResponseEntity.noContent().build();
     }
 
 }

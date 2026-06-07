@@ -2,6 +2,7 @@ package com.finances.dashboard.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -67,36 +68,30 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest user,
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userRequest,
             Authentication authentication) {
         Long currentUserId = (Long) authentication.getPrincipal();
         if (!id.equals(currentUserId)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        try {
-            User updatedUser = userService.update(id, user);
-            return ResponseEntity
-                    .ok(userMapper.toResponse(updatedUser));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        User user = userService.findById(id);
+        if (!user.getId().equals(currentUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        User updatedUser = userService.update(id, userRequest);
+        return ResponseEntity
+                .ok(userMapper.toResponse(updatedUser));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id, Authentication authentication) {
-        try {
-            User user = userService.findById(id);
-            if (user == null) {
-                return ResponseEntity.notFound().build();
-            }
-            if (!user.getId().equals(authentication.getPrincipal())) {
-                return ResponseEntity.badRequest().build();
-            }
-            userService.softDelete(user);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        User user = userService.findById(id);
+        if (!user.getId().equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        userService.softDelete(user);
+        return ResponseEntity.noContent().build();
     }
 
 }

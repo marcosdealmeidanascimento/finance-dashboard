@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,30 +67,24 @@ public class IncomeController {
     public ResponseEntity<IncomeResponse> updateIncome(@PathVariable Long id,
             @RequestBody IncomeUpdateRequest incomeRequest,
             Authentication authentication) {
-        try {
-            Income updatedIncome = incomeService.update(id, incomeRequest);
-            return ResponseEntity.ok(incomeMapper.toResponse(updatedIncome));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        Long userId = (Long) authentication.getPrincipal();
+        Income income = incomeService.findById(id);
+        if (!income.getUser().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        Income updatedIncome = incomeService.update(id, incomeRequest);
+        return ResponseEntity.ok(incomeMapper.toResponse(updatedIncome));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncome(@PathVariable Long id, Authentication authentication) {
-        try {
-            Income income = incomeService.findById(id);
-            if (income == null) {
-                return ResponseEntity.notFound().build();
-            }
-            Long userId = (Long) authentication.getPrincipal();
-            if (!income.getUser().getId().equals(userId)) {
-                return ResponseEntity.badRequest().build();
-            }
-            incomeService.softDelete(income);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+        Income income = incomeService.findById(id);
+        Long userId = (Long) authentication.getPrincipal();
+        if (!income.getUser().getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        incomeService.softDelete(income);
+        return ResponseEntity.noContent().build();
     }
 
 }
