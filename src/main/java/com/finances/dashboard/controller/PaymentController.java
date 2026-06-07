@@ -120,9 +120,13 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id, Authentication authentication) {
         try {
+            Long userId = (Long) authentication.getPrincipal();
             Payment payment = paymentService.findById(id);
+            if (!payment.getUser().getId().equals(userId)) {
+                return ResponseEntity.badRequest().build();
+            }
             paymentService.softDelete(payment);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

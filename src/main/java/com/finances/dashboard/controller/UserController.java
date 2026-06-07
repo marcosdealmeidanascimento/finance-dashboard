@@ -83,11 +83,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, Authentication authentication) {
         try {
             User user = userService.findById(id);
             if (user == null) {
                 return ResponseEntity.notFound().build();
+            }
+            if (!user.getId().equals(authentication.getPrincipal())) {
+                return ResponseEntity.badRequest().build();
             }
             userService.softDelete(user);
             return ResponseEntity.noContent().build();

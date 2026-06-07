@@ -75,9 +75,16 @@ public class IncomeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIncome(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteIncome(@PathVariable Long id, Authentication authentication) {
         try {
             Income income = incomeService.findById(id);
+            if (income == null) {
+                return ResponseEntity.notFound().build();
+            }
+            Long userId = (Long) authentication.getPrincipal();
+            if (!income.getUser().getId().equals(userId)) {
+                return ResponseEntity.badRequest().build();
+            }
             incomeService.softDelete(income);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
