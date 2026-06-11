@@ -14,30 +14,36 @@ import com.finances.dashboard.model.User;
 public interface SummaryRepository extends JpaRepository<User, Long> {
 
     @Query(value = """
-            SELECT
+                        SELECT
                 u.id AS userId,
-                u.name AS name,
-                u.email AS email,
-
-                COALESCE((
-                    SELECT SUM(i.amount)
-                    FROM incomes i
-                    WHERE i.user_id = u.id
-                      AND i.deleted_at IS NULL
-                      AND i.received_date BETWEEN :startDate AND :endDate
-                ), 0) AS totalIncome,
-
-                COALESCE((
-                    SELECT SUM(p.amount)
-                    FROM payments p
-                    WHERE p.user_id = u.id
-                      AND p.deleted_at IS NULL
-                      AND p.due_date BETWEEN :startDate AND :endDate
-                ), 0) AS totalPayments
-
+                u.name,
+                u.email,
+                COALESCE(i.total_income, 0) AS totalIncome,
+                COALESCE(p.total_payment, 0) AS totalPayments
             FROM users u
-            WHERE u.deleted_at IS NULL
-            """, nativeQuery = true)
+
+            LEFT JOIN (
+                SELECT
+                    user_id,
+                    SUM(amount) AS total_income
+                FROM incomes
+                WHERE deleted_at IS NULL
+                  AND received_date BETWEEN :startDate AND :endDate
+                GROUP BY user_id
+            ) i ON i.user_id = u.id
+
+            LEFT JOIN (
+                SELECT
+                    user_id,
+                    SUM(amount) AS total_payment
+                FROM payments
+                WHERE deleted_at IS NULL
+                  AND due_date BETWEEN :startDate AND :endDate
+                GROUP BY user_id
+            ) p ON p.user_id = u.id
+
+            WHERE u.deleted_at IS NULL;
+                        """, nativeQuery = true)
     List<UserSummaryProjection> findAllSummaries(
             LocalDate startDate,
             LocalDate endDate);

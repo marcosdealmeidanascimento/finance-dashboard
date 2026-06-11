@@ -11,7 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean
+    @Bean(name = "emailExecutor")
     public Executor taskExecutor() {
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

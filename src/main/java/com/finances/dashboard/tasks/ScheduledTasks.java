@@ -51,9 +51,7 @@ public class ScheduledTasks {
         payments.forEach(emailService::sendDueDateNotification);
     }
 
-    @Async
-    // @Scheduled(cron = "0 0 0 1 * *")
-    @Scheduled(cron = "0 39 18 * * *")
+    @Scheduled(cron = "0 0 0 1 * *")
     public void sendMonthlySummary() {
         log.info("Sending monthly summary");
         List<SummaryUserResponse> summaries = summaryService.getSummaryByUser();

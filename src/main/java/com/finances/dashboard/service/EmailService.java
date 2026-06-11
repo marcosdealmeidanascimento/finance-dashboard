@@ -1,5 +1,7 @@
 package com.finances.dashboard.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -12,12 +14,15 @@ import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.model.Payment;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
@@ -39,12 +44,18 @@ public class EmailService {
         }
     }
 
-    @Async
+    @Async("emailExecutor")
     public void sendMonthlySummaryNotification(SummaryResponse summary, UserResponse user) {
-        String to = user.email();
-        String subject = "Monthly Summary";
-        String text = buildMonthlySummaryHtml(summary, user);
-        sendHtmlEmail(to, subject, text);
+        try {
+            String to = user.email();
+            String subject = "Monthly Summary";
+            String text = buildMonthlySummaryHtml(summary, user);
+            sendHtmlEmail(to, subject, text);
+        } catch (Exception e) {
+            log.error("Failed to send monthly summary email to {}",
+                    user.email(),
+                    e);
+        }
     }
 
     public String buildMonthlySummaryHtml(SummaryResponse summary, UserResponse user) {
