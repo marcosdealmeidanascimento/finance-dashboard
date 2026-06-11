@@ -69,7 +69,7 @@ public class IncomeController {
             Income createdIncome = incomeService.create(incomeRequest, user);
             return ResponseEntity.ok(incomeMapper.toResponse(createdIncome));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            throw new RuntimeException(e);
         }
     }
 

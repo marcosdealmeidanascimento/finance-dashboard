@@ -74,7 +74,7 @@ public class PaymentController {
             Payment createdPayment = paymentService.create(payment, user);
             return ResponseEntity.ok(paymentMapper.toResponse(createdPayment));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            throw new RuntimeException(e);
         }
     }
 
@@ -85,7 +85,7 @@ public class PaymentController {
             Payment updatedPayment = paymentService.update(id, payment);
             return ResponseEntity.ok(paymentMapper.toResponse(updatedPayment));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            throw new RuntimeException(e);
         }
     }
 
@@ -100,7 +100,7 @@ public class PaymentController {
             payment = paymentService.markAsPaid(id);
             return ResponseEntity.ok(paymentMapper.toResponse(payment));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            throw new RuntimeException(e);
         }
     }
 

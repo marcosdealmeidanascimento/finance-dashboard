@@ -23,11 +23,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handle(Exception e) {
-        e.printStackTrace(); // importante pra debug
+        e.printStackTrace();
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erro interno: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(
+                500,
+                "Internal Server Error",
+                e.getMessage(),
+                LocalDateTime.now()));
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.UserCreateRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
+import com.finances.dashboard.exception.ResourceNotFoundException;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.UserRepository;
 
@@ -40,7 +41,7 @@ public class UserService extends BaseService<User> {
     @Transactional
     public User update(Long id, UserUpdateRequest user) {
         User existingUser = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         if (user.name() != null)
             existingUser.setName(user.name());
         if (user.email() != null)

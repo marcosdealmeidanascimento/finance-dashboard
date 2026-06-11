@@ -29,11 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        try {
-            return ResponseEntity.ok(authService.login(request));
-        } catch (Exception e) {
-            throw new RuntimeException("Login failed: " + e.getMessage());
-        }
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/refresh")

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.LoginRequest;
 import com.finances.dashboard.dto.response.AuthResponse;
+import com.finances.dashboard.exception.ResourceNotFoundException;
 import com.finances.dashboard.model.RefreshToken;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.RefreshTokenRepository;
@@ -33,7 +34,7 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.email()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.email()));
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
