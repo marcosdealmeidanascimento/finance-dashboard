@@ -1,10 +1,37 @@
-# Dashboard de Finanças Pessoais
+# 📊 Finance Dashboard API
 
-Este projeto é um dashboard de finanças pessoais desenvolvido em Java com Spring Boot. Ele permite que os usuários gerenciem suas finanças, incluindo receitas, despesas e investimentos, de forma fácil e intuitiva.
+Este repositório contém o código-fonte do **Finance Dashboard API**, uma aplicação desenvolvida em **Spring Boot** para o gerenciamento de finanças pessoais ou corporativas. A API permite o controle de utilizadores, fluxos de receitas (Incomes), pagamentos/despesas (Payments), geração de resumos financeiros automatizados e notificações por e-mail.
 
-## Arquitetura
-O projeto segue uma arquitetura em camadas, com as seguintes camadas principais:
-- **Controller**: Responsável por receber as requisições HTTP e retornar as respostas.
-- **Service**: Contém a lógica de negócio da aplicação.
-- **Repository**: Responsável por interagir com o banco de dados.
-- **Model**: Define as entidades do sistema.
+---
+
+## 🛠️ Tecnologias e Ferramentas Utilizadas
+
+O projeto utiliza o ecossistema do Spring framework aliado a práticas modernas de persistência, segurança e conteinerização:
+
+- **Linguagem Principal:** Java (Spring Boot)
+- **Segurança:** Spring Security + JWT (JSON Web Tokens) para autenticação/autorização de rotas.
+- **Banco de Dados & Migrações:** (`db/V1__initial_schema.sql`, `V2__indexes.sql`) para controlo de versão do banco de dados relacional (Flyway não implementado).
+- **Documentação:** OpenAPI / Swagger (`openapi.json` e `OpenApiConfig.java`).
+- **Comunicação & Mensageria:** Envio assíncrono de e-mails (`EmailService.java`, `AsyncConfig.java`) utilizando templates HTML dinâmicos.
+- **Tarefas Agendadas:** Execução automática de rotinas e balanços (`ScheduledTasks.java`).
+- **Mapeamento de Dados:** MapStruct ou similar (`mapper/`) para conversões eficientes entre Entidades e DTOs.
+- **Gerenciador de Dependências:** Maven (`pom.xml`, `mvnw`).
+- **Infraestrutura:** Docker Compose (`compose.yaml`) para orquestrar serviços auxiliares (como instâncias de Banco de Dados).
+
+---
+
+## 📂 Visão Geral da Estrutura do Projeto
+
+Abaixo está o mapeamento conceitual das principais camadas organizadas na pasta `src/main/java/com/finances/dashboard/`:
+
+```text
+├── ⚙️ config       -> Configurações de Segurança (JWT, CORS, WebSecurity) e execução Assíncrona.
+├── 🎮 controller   -> Camada de Rest Controllers expondo as rotas HTTP da API.
+├── 📦 dto          -> Data Transfer Objects separados rigorosamente entre Requests e Responses.
+├── 🏷️ enums        -> Enumeradores de domínio da aplicação (ex: Status de Pagamento).
+├── 🚨 exception    -> Tratamento global de erros e exceções customizadas (ex: ResourceNotFound).
+├── 🔄 mapper       -> Classes responsáveis por converter modelos de domínio para DTOs e vice-versa.
+├── 🗙 model        -> Entidades de domínio mapeadas para tabelas do banco de dados (JPA/Hibernate).
+├── 💾 repository   -> Interfaces Spring Data JPA para comunicação fluida com o banco de dados.
+├── 💼 service      -> Camada com as regras de negócio centrais e integrações.
+└── ⏰ tasks        -> Rotinas agendadas (Cron jobs) executadas em background.
