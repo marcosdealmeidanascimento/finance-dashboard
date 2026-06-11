@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 import com.finances.dashboard.dto.response.SummaryResponse;
 import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.model.Payment;
+import com.finances.dashboard.model.User;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,27 @@ public class EmailService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Async
+    public void sendWelcomeEmail(User user) {
+        try {
+            String to = user.getEmail();
+            String subject = "Welcome to Finances Dashboard";
+            String text = buildWelcomeHtml(user);
+            sendHtmlEmail(to, subject, text);
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}",
+                    user.getEmail(),
+                    e);
+        }
+    }
+
+    public String buildWelcomeHtml(User user) {
+        Context context = new Context();
+        context.setVariable("name", user.getName());
+        context.setVariable("email", user.getEmail());
+        return templateEngine.process("email/welcome", context);
     }
 
     @Async("emailExecutor")

@@ -1,0 +1,244 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Welcome to Finance Dashboard</title>
+  </head>
+
+  <body style="font-family: Arial, sans-serif">
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+      "
+    >
+      <tr>
+        <td style="background: #2563eb; color: white; padding: 30px">
+          <h1 style="margin: 0">🎉 Welcome to Finance Dashboard</h1>
+
+          <p style="margin-top: 10px">
+            Your account has been successfully created and is ready to use.
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 30px">
+          <p>Hello <strong th:text="${name}">John</strong>,</p>
+
+          <p>
+            Welcome to <strong>Finance Dashboard</strong>. Your account is now
+            active and ready to help you organize your finances, monitor your
+            income, track expenses, and gain visibility into your financial
+            habits.
+          </p>
+
+          <hr
+            style="border: none; border-top: 1px solid #eee; margin: 25px 0"
+          />
+
+          <h2>👤 Account Details</h2>
+
+          <table
+            width="100%"
+            cellpadding="10"
+            cellspacing="0"
+            style="border: 1px solid #eee; border-radius: 8px"
+          >
+            <tr>
+              <td>Name</td>
+              <td align="right">
+                <strong th:text="${name}">John Doe</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Email</td>
+              <td align="right">
+                <strong th:text="${email}">john@email.com</strong>
+              </td>
+            </tr>
+          </table>
+
+          <br />
+
+          <h2>🚀 Available Features</h2>
+
+          <table
+            width="100%"
+            cellpadding="10"
+            cellspacing="0"
+            style="border: 1px solid #eee; border-radius: 8px"
+          >
+            <tr>
+              <td>💰 Register income and earnings</td>
+            </tr>
+
+            <tr>
+              <td>💳 Track upcoming payments</td>
+            </tr>
+
+            <tr>
+              <td>🔄 Manage recurring expenses automatically</td>
+            </tr>
+
+            <tr>
+              <td>📊 Monitor monthly financial summaries</td>
+            </tr>
+
+            <tr>
+              <td>📈 Track your financial balance over time</td>
+            </tr>
+
+            <tr>
+              <td>📧 Receive payment reminders and reports</td>
+            </tr>
+          </table>
+
+          <br />
+
+          <h2>🎯 Getting Started</h2>
+
+          <table
+            width="100%"
+            cellpadding="10"
+            cellspacing="0"
+            style="background: #f8fafc; border-radius: 8px"
+          >
+            <tr>
+              <td>
+                <strong>1.</strong> Add your first income source.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <strong>2.</strong> Register your upcoming expenses and
+                payments.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <strong>3.</strong> Mark recurring payments for automatic future
+                creation.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <strong>4.</strong> Start monitoring your financial health
+                through summaries and reports.
+              </td>
+            </tr>
+          </table>
+
+          <br />
+
+          <h2>📊 Why Use Finance Dashboard?</h2>
+
+          <table
+            width="100%"
+            cellpadding="12"
+            cellspacing="0"
+            style="background: #eff6ff; border-radius: 8px"
+          >
+            <tr>
+              <td>
+                <strong style="font-size: 18px">
+                  Better visibility leads to better decisions
+                </strong>
+
+                <p style="margin-top: 10px; margin-bottom: 0">
+                  Keeping track of your finances helps identify spending
+                  patterns, understand cash flow, avoid missed payments, and
+                  build stronger financial habits.
+                </p>
+              </td>
+            </tr>
+          </table>
+
+          <br />
+
+          <h2>🔔 Automated Notifications</h2>
+
+          <table
+            width="100%"
+            cellpadding="12"
+            cellspacing="0"
+            style="background: #f0fdf4; border-radius: 8px"
+          >
+            <tr>
+              <td>
+                <strong>Payment Due Reminders</strong>
+
+                <p style="margin-top: 10px; margin-bottom: 0">
+                  Receive alerts before your payments reach their due dates.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <strong>Monthly Financial Summary</strong>
+
+                <p style="margin-top: 10px; margin-bottom: 0">
+                  Receive a complete overview of your income, expenses, and
+                  balance every month.
+                </p>
+              </td>
+            </tr>
+          </table>
+
+          <br />
+
+          <div
+            style="
+              background: #fefce8;
+              padding: 20px;
+              border-radius: 8px;
+            "
+          >
+            <h3 style="margin-top: 0">💡 Tip</h3>
+
+            <p style="margin-bottom: 0">
+              The sooner you start registering your income and expenses, the
+              more valuable your financial reports will become over time.
+            </p>
+          </div>
+
+          <br />
+
+          <p>
+            Thank you for joining <strong>Finance Dashboard</strong>.
+          </p>
+
+          <p>
+            We're excited to be part of your financial journey. 🚀
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td
+          style="
+            background: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+          "
+        >
+          <small>
+            This is an automated message generated by the Finance Dashboard.
+          </small>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -7,12 +7,19 @@ import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.UserCreateRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
+import com.finances.dashboard.exception.BadRequestException;
 import com.finances.dashboard.exception.ResourceNotFoundException;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class UserService extends BaseService<User> {
 
@@ -21,6 +28,11 @@ public class UserService extends BaseService<User> {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
+
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Override
     protected JpaRepository<User, Long> getRepository() {
@@ -31,11 +43,17 @@ public class UserService extends BaseService<User> {
         User user = new User();
         user.setName(userCreateRequest.name());
         if (repository.existsByEmail(userCreateRequest.email())) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
         user.setEmail(userCreateRequest.email());
         user.setPassword(passwordEncoder.encode(userCreateRequest.password()));
-        return repository.save(user);
+        User createdUser = repository.save(user);
+        try {
+            emailService.sendWelcomeEmail(createdUser);
+        } catch (Exception e) {
+            log.error("Failed to send welcome email", e);
+        }
+        return createdUser;
     }
 
     @Transactional
