@@ -3,10 +3,12 @@ package com.finances.dashboard.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finances.dashboard.dto.request.UserCreateRequest;
+import com.finances.dashboard.dto.request.UserProfilePictureRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
+import com.finances.dashboard.dto.response.UserProfilePictureResponse;
 import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.mapper.UserMapper;
 import com.finances.dashboard.model.User;
@@ -88,6 +92,28 @@ public class UserController {
         }
         userService.softDelete(user);
         return ResponseEntity.noContent().build();
+    }
+    
+
+    @GetMapping("/profile-picture")
+    public ResponseEntity<UserProfilePictureResponse> getProfilePicture(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        String profilePictureUrl = userService.getProfilePicture(userId);
+        return ResponseEntity.ok(new UserProfilePictureResponse(profilePictureUrl));
+    }
+
+    @PutMapping(value = "/profile-picture/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserProfilePictureResponse> uploadProfilePicture(@PathVariable Long id, @ModelAttribute UserProfilePictureRequest userRequest, Authentication authentication) {
+        Long currentUserId = (Long) authentication.getPrincipal();
+        if (!id.equals(currentUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        User user = userService.findById(id);
+        if (!user.getId().equals(currentUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String profilePictureUrl = userService.updateProfilePicture(id, userRequest);
+        return ResponseEntity.ok(new UserProfilePictureResponse(profilePictureUrl));
     }
 
 }

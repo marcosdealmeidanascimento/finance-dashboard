@@ -7,3 +7,19 @@ services:
       - 'POSTGRES_USER=fin_dashboard_user'
     ports:
       - '5432:5432'
+
+  minio:
+    image: 'minio/minio:latest'
+    environment:
+      - 'MINIO_ROOT_USER=fin_dashboard_user'
+      - 'MINIO_ROOT_PASSWORD=12345678'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - 'miniodata:/data'
+    command: server /data --console-address :9001
+
+volumes:
+  miniodata:
+

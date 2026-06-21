@@ -19,6 +19,8 @@ public class User extends DomainEntity {
     @Column(unique = true)
     private String email;
 
+    private String profilePictureUrl;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

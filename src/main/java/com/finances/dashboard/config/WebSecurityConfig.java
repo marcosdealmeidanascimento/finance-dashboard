@@ -21,6 +21,8 @@ public class WebSecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
                 return http
+                                .cors(cors -> {
+                                })
                                 .csrf(csrf -> csrf.disable())
                                 .exceptionHandling(ex -> ex
                                                 .authenticationEntryPoint((req, res, authException) -> {

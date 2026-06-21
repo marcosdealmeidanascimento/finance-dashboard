@@ -1,11 +1,14 @@
 package com.finances.dashboard.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.UserCreateRequest;
+import com.finances.dashboard.dto.request.UserProfilePictureRequest;
 import com.finances.dashboard.dto.request.UserUpdateRequest;
 import com.finances.dashboard.exception.BadRequestException;
 import com.finances.dashboard.exception.ResourceNotFoundException;
@@ -13,10 +16,6 @@ import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,6 +30,9 @@ public class UserService extends BaseService<User> {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -69,6 +71,23 @@ public class UserService extends BaseService<User> {
                     passwordEncoder.encode(user.password()));
         }
         return repository.save(existingUser);
+    }
+
+    @Transactional
+    public String updateProfilePicture(Long id, UserProfilePictureRequest userRequest) {
+        User existingUser = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        String profilePictureUrl = fileStorageService.uploadFile(userRequest.file());
+
+        existingUser.setProfilePictureUrl(profilePictureUrl);
+        return profilePictureUrl;
+    }
+
+    public String getProfilePicture(Long id) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return fileStorageService.generatePresignedUrl(user.getProfilePictureUrl());
     }
 
 }
