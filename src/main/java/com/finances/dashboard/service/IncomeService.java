@@ -33,7 +33,6 @@ public class IncomeService extends BaseService<Income> {
     }
 
     public Income create(IncomeCreateRequest incomeRequest, User user) {
-        System.out.println(incomeRequest);
         Income income = new Income();
         income.setDescription(incomeRequest.description());
         income.setAmount(incomeRequest.amount());
