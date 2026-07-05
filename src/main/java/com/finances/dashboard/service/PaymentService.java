@@ -34,10 +34,10 @@ public class PaymentService extends BaseService<Payment> {
             Pageable pageable) {
 
         if (status != null) {
-            return repository.findByUser_IdAndStatus(userId, status, pageable);
+            return repository.findByUser_IdAndStatusAndDeletedAtIsNull(userId, status, pageable);
         }
 
-        return repository.findByUser_Id(userId, pageable);
+        return repository.findByUser_IdAndDeletedAtIsNull(userId, pageable);
     }
 
     public BigDecimal sumByUser_IdAndDeletedAtIsNullAndDueDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {

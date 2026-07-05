@@ -113,7 +113,6 @@ public class PaymentController {
 
         }
         payment = paymentService.markAsCanceled(id);
-        paymentService.softDelete(payment);
         return ResponseEntity.ok(paymentMapper.toResponse(payment));
     }
 
