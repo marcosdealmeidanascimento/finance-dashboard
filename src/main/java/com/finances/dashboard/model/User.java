@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
 
 @Entity
 @Data
@@ -16,7 +15,7 @@ import jakarta.persistence.Column;
 public class User extends DomainEntity {
     private String name;
 
-    @Column(unique = true)
+    // Unique per active user, case-insensitive: enforced by the uq_users_email_active index (V4).
     private String email;
 
     private String profilePictureUrl;

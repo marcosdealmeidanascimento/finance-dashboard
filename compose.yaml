@@ -1,18 +1,32 @@
+# Infra only (database + file storage). Also used by spring-boot-docker-compose when running
+# the API locally with ./mvnw spring-boot:run. The full stack lives in ../compose.yaml.
+# Passwords come from a .env file (the root one for the full stack, finance-dashboard/.env for local runs;
+# see .env.example). Nothing secret is written here.
 services:
   postgres:
-    image: 'postgres:latest'
+    # Pinned: the data volume was created by Postgres 18 and can't be opened by another major version.
+    image: 'postgres:18'
     environment:
       - 'POSTGRES_DB=fin_dashboard'
-      - 'POSTGRES_PASSWORD=123456'
       - 'POSTGRES_USER=fin_dashboard_user'
+      # Only applied when the volume is first created; changing it later doesn't change the real password.
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}'
     ports:
       - '5432:5432'
+    volumes:
+      # The schema is created and migrated by Flyway when the API starts.
+      - 'pgdata:/var/lib/postgresql'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U fin_dashboard_user -d fin_dashboard']
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   minio:
     image: 'minio/minio:latest'
     environment:
-      - 'MINIO_ROOT_USER=fin_dashboard_user'
-      - 'MINIO_ROOT_PASSWORD=12345678'
+      - 'MINIO_ROOT_USER=${MINIO_ROOT_USER:?Defina MINIO_ROOT_USER no .env}'
+      - 'MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?Defina MINIO_ROOT_PASSWORD no .env}'
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -21,5 +35,5 @@ services:
     command: server /data --console-address :9001
 
 volumes:
+  pgdata:
   miniodata:
-

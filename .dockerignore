@@ -1,0 +1,7 @@
+target/
+.git/
+.idea/
+.vscode/
+*.iml
+# Holds real secrets for local runs; the image uses application.properties.example + env vars instead.
+src/main/resources/application.properties

@@ -3,6 +3,7 @@ package com.finances.dashboard.repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,9 @@ import com.finances.dashboard.enums.PaymentStatus;
 import com.finances.dashboard.model.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    // Ownership is part of the lookup: another user's payment is simply "not found".
+    Optional<Payment> findByIdAndUser_IdAndDeletedAtIsNull(Long id, Long userId);
+
     Page<Payment> findByUser_IdAndDeletedAtIsNull(Long userId, Pageable pageable);
 
     Page<Payment> findByUser_IdAndStatusAndDeletedAtIsNull(Long userId, PaymentStatus status, Pageable pageable);

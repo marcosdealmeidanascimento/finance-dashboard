@@ -2,6 +2,7 @@ package com.finances.dashboard.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.finances.dashboard.model.Income;
 
 public interface IncomeRepository extends JpaRepository<Income, Long> {
+    // Ownership is part of the lookup: another user's income is simply "not found".
+    Optional<Income> findByIdAndUser_IdAndDeletedAtIsNull(Long id, Long userId);
+
     Page<Income> findByUser_IdAndDeletedAtIsNullAndReceivedDateBetween(Long userId, LocalDate startDate,
             LocalDate endDate, Pageable pageable);
 

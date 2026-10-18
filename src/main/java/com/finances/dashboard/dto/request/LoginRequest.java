@@ -1,8 +1,9 @@
 package com.finances.dashboard.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
-    String email,
-    String password
+    @NotBlank(message = "Informe o e-mail.") String email,
+    @NotBlank(message = "Informe a senha.") String password
 ) {
 }

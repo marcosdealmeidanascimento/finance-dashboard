@@ -3,25 +3,31 @@ package com.finances.dashboard.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.finances.dashboard.dto.request.IncomeCreateRequest;
 import com.finances.dashboard.dto.request.IncomeUpdateRequest;
+import com.finances.dashboard.exception.ResourceNotFoundException;
 import com.finances.dashboard.model.Income;
 import com.finances.dashboard.model.User;
 import com.finances.dashboard.repository.IncomeRepository;
 
-@Service
-public class IncomeService extends BaseService<Income> {
-    @Autowired
-    private IncomeRepository repository;
+import jakarta.transaction.Transactional;
 
-    @Override
-    public IncomeRepository getRepository() {
-        return repository;
+@Service
+public class IncomeService {
+    private final IncomeRepository repository;
+
+    public IncomeService(IncomeRepository repository) {
+        this.repository = repository;
+    }
+
+    /** Active income owned by the user; anything else (missing, deleted, someone else's) is a 404. */
+    public Income getOwned(Long id, Long userId) {
+        return repository.findByIdAndUser_IdAndDeletedAtIsNull(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Receita não encontrada."));
     }
 
     public Page<Income> findByUser_Id(Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
@@ -34,26 +40,27 @@ public class IncomeService extends BaseService<Income> {
 
     public Income create(IncomeCreateRequest incomeRequest, User user) {
         Income income = new Income();
-        income.setDescription(incomeRequest.description());
+        income.setDescription(incomeRequest.description().trim());
         income.setAmount(incomeRequest.amount());
         income.setReceivedDate(incomeRequest.receivedDate());
         income.setUser(user);
         return repository.save(income);
     }
 
-    public Income update(Long id, IncomeUpdateRequest incomeRequest) {
-        Income existingIncome = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
-        if (existingIncome.getDeletedAt() != null) {
-            throw new RuntimeException("Income is deleted and cannot be updated.");
-        }
-        if (incomeRequest.description() != null)
-            existingIncome.setDescription(incomeRequest.description());
-        if (incomeRequest.amount() != null)
-            existingIncome.setAmount(incomeRequest.amount());
-        if (incomeRequest.receivedDate() != null)
-            existingIncome.setReceivedDate(incomeRequest.receivedDate());
+    @Transactional
+    public Income update(Long id, Long userId, IncomeUpdateRequest incomeRequest) {
+        Income existingIncome = getOwned(id, userId);
+        existingIncome.setDescription(incomeRequest.description().trim());
+        existingIncome.setAmount(incomeRequest.amount());
+        existingIncome.setReceivedDate(incomeRequest.receivedDate());
         return repository.save(existingIncome);
+    }
+
+    @Transactional
+    public void delete(Long id, Long userId) {
+        Income existingIncome = getOwned(id, userId);
+        existingIncome.softDelete();
+        repository.save(existingIncome);
     }
 
 }

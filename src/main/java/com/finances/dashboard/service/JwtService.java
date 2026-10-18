@@ -13,12 +13,14 @@ import com.finances.dashboard.model.User;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret;
+
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        this.secret = secret;
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
@@ -39,23 +41,6 @@ public class JwtService {
 
     public String generateRefreshToken() {
         return UUID.randomUUID().toString();
-    }
-
-    public String extractToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-        throw new RuntimeException("JWT token is missing or invalid");
-    }
-
-    public String extractEmail(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
     }
 
     public Long extractUserId(String token) {

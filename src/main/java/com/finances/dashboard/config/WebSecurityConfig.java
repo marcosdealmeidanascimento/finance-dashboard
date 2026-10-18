@@ -1,6 +1,5 @@
 package com.finances.dashboard.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,8 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-        @Autowired
-        private JwtFilter jwtFilter;
+        private final JwtFilter jwtFilter;
+
+        public WebSecurityConfig(JwtFilter jwtFilter) {
+                this.jwtFilter = jwtFilter;
+        }
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -1,11 +1,9 @@
 package com.finances.dashboard.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,10 +20,10 @@ import com.finances.dashboard.dto.request.UserUpdateRequest;
 import com.finances.dashboard.dto.response.UserProfilePictureResponse;
 import com.finances.dashboard.dto.response.UserResponse;
 import com.finances.dashboard.mapper.UserMapper;
-import com.finances.dashboard.model.User;
 import com.finances.dashboard.service.UserService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/users")
@@ -40,80 +38,46 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
-        try {
-            Long userId = (Long) authentication.getPrincipal();
-            User user = userService.findById(userId);
-            return ResponseEntity.ok(userMapper.toResponse(user));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        try {
-            List<User> users = userService.findAll();
-            return ResponseEntity.ok(users.stream().map(userMapper::toResponse).toList());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(userMapper.toResponse(userService.getActive(userId)));
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest user) {
-        User createdUser = userService.create(user);
-        return ResponseEntity
-                .ok(userMapper.toResponse(createdUser));
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest user) {
+        return ResponseEntity.ok(userMapper.toResponse(userService.create(user)));
     }
 
+    // The {id} routes only ever act on the caller's own account.
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userRequest,
-            Authentication authentication) {
-        Long currentUserId = (Long) authentication.getPrincipal();
-        if (!id.equals(currentUserId)) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest userRequest,
+            @AuthenticationPrincipal Long userId) {
+        if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        User user = userService.findById(id);
-        if (!user.getId().equals(currentUserId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        User updatedUser = userService.update(id, userRequest);
-        return ResponseEntity
-                .ok(userMapper.toResponse(updatedUser));
+        return ResponseEntity.ok(userMapper.toResponse(userService.update(id, userRequest)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id, Authentication authentication) {
-        User user = userService.findById(id);
-        if (!user.getId().equals(authentication.getPrincipal())) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @AuthenticationPrincipal Long userId) {
+        if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        userService.softDelete(user);
+        userService.deleteAccount(id);
         return ResponseEntity.noContent().build();
     }
-    
 
     @GetMapping("/profile-picture")
-    public ResponseEntity<UserProfilePictureResponse> getProfilePicture(Authentication authentication) {
-        Long userId = (Long) authentication.getPrincipal();
-        String profilePictureUrl = userService.getProfilePicture(userId);
-        return ResponseEntity.ok(new UserProfilePictureResponse(profilePictureUrl));
+    public ResponseEntity<UserProfilePictureResponse> getProfilePicture(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(new UserProfilePictureResponse(userService.getProfilePicture(userId)));
     }
 
     @PutMapping(value = "/profile-picture/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserProfilePictureResponse> uploadProfilePicture(@PathVariable Long id, @ModelAttribute UserProfilePictureRequest userRequest, Authentication authentication) {
-        Long currentUserId = (Long) authentication.getPrincipal();
-        if (!id.equals(currentUserId)) {
+    public ResponseEntity<UserProfilePictureResponse> uploadProfilePicture(@PathVariable Long id,
+            @ModelAttribute UserProfilePictureRequest userRequest, @AuthenticationPrincipal Long userId) {
+        if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        User user = userService.findById(id);
-        if (!user.getId().equals(currentUserId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        String profilePictureUrl = userService.updateProfilePicture(id, userRequest);
-        return ResponseEntity.ok(new UserProfilePictureResponse(profilePictureUrl));
+        return ResponseEntity.ok(new UserProfilePictureResponse(userService.updateProfilePicture(id, userRequest)));
     }
 
 }

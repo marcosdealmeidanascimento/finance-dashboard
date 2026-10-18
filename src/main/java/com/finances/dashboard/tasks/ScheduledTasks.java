@@ -1,6 +1,5 @@
 package com.finances.dashboard.tasks;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,8 +18,6 @@ import com.finances.dashboard.service.SummaryService;
 public class ScheduledTasks {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
     private final EmailService emailService;
     private final PaymentService paymentService;
     private final SummaryService summaryService;
@@ -29,17 +26,6 @@ public class ScheduledTasks {
         this.emailService = emailService;
         this.paymentService = paymentService;
         this.summaryService = summaryService;
-    }
-
-    @Async
-    @Scheduled(fixedRate = 60000)
-    public void reportCurrentThreadName() {
-        log.info("Thread name is {}", Thread.currentThread().getName());
-    }
-
-    @Scheduled(fixedRate = 15000)
-    public void reportCurrentTime() {
-        log.info("The time is now {}", dateFormat.format(System.currentTimeMillis()));
     }
 
     @Async
