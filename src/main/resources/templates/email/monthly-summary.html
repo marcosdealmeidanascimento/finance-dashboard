@@ -1,115 +1,163 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Your Monthly Finance Summary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="supported-color-schemes" content="dark" />
+    <title>Resumo do mês</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
   </head>
-  <body style="font-family: Arial, sans-serif">
-    <table
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      style="
-        max-width: 700px;
-        margin: auto;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-      "
-    >
+
+  <body style="margin: 0; padding: 0; background: #00041c">
+    <!-- Inbox preview text. -->
+    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: #00041c">
+      Saldo de <span th:text="${monthLabel}">outubro de 2026</span>: <span th:text="${balance}">R$ 3.482,90</span>.
+    </div>
+
+    <table role="presentation" width="100%" bgcolor="#00041C" cellpadding="0" cellspacing="0" border="0" style="background: #00041c">
       <tr>
-        <td style="background: #2563eb; color: white; padding: 30px">
-          <h1 style="margin: 0">📊 Monthly Finance Summary</h1>
-          <p style="margin-top: 10px">
-            Your financial overview for the period
-            <strong th:text="${startDate}">2026-07-01</strong> to
-            <strong th:text="${endDate}">2026-07-31</strong>
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding: 30px">
-          <p>Hello <strong th:text="${name}">John</strong>,</p>
-          <p>
-            Here's a summary of your finances during the selected period. Use
-            this report to track your spending habits, savings progress, and
-            overall financial health.
-          </p>
-          <hr
-            style="border: none; border-top: 1px solid #eee; margin: 25px 0"
-          />
-          <h2>💰 Income</h2>
+        <td align="center" style="padding: 32px 16px">
           <table
+            role="presentation"
             width="100%"
-            cellpadding="10"
+            cellpadding="0"
             cellspacing="0"
-            style="border: 1px solid #eee; border-radius: 8px"
+            border="0"
+            style="max-width: 560px; font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif; color: #eef1ff"
           >
             <tr>
-              <td>Total Income</td>
-              <td align="right">
-                <strong th:text="${totalIncome}">R$ 5.000,00</strong>
+              <td style="padding: 0 4px 24px 4px">
+                <table th:replace="~{email/fragments :: header}"></table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 0 4px 16px 4px; font-size: 15px; line-height: 23px; color: #a9b0d6">
+                Olá, <strong style="color: #eef1ff" th:text="${firstName}">Marcos</strong>. Este é o fechamento de
+                <strong style="color: #eef1ff" th:text="${monthLabel}">outubro de 2026</strong>.
+              </td>
+            </tr>
+
+            <!-- Hero: balance, share of income spent, income and expenses -->
+            <tr>
+              <td bgcolor="#000831" align="center" style="background: #000831; border: 1px solid #005c4b; border-radius: 28px; padding: 28px 22px 22px 22px">
+                <div style="font-size: 13px; font-weight: 600; color: #a9b0d6">Saldo do mês</div>
+                <div
+                  style="margin-top: 6px; font-size: 40px; line-height: 46px; font-weight: 700; letter-spacing: -1.6px"
+                  th:style="'margin-top: 6px; font-size: 40px; line-height: 46px; font-weight: 700; letter-spacing: -1.6px; color: ' + (${balanceSign} lt 0 ? '#FF4B26' : '#FFFFFF')"
+                  th:text="${balance}"
+                >
+                  R$ 3.482,90
+                </div>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 18px">
+                  <tr>
+                    <td bgcolor="#18214D" style="background: #18214d; border-radius: 3px; height: 6px; font-size: 0; line-height: 0">
+                      <table
+                        th:if="${spentPercent != null and spentPercent gt 0}"
+                        role="presentation"
+                        cellpadding="0"
+                        cellspacing="0"
+                        border="0"
+                        th:width="${spentPercent + '%'}"
+                        width="62%"
+                      >
+                        <tr>
+                          <td bgcolor="#00D973" style="background: #00d973; border-radius: 3px; height: 6px; font-size: 0; line-height: 0">&nbsp;</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <div style="margin-top: 10px; font-size: 12px; color: #a9b0d6">
+                  <span th:if="${spentPercent != null}"><span th:text="${spentPercent}">62</span>% das receitas comprometidas</span>
+                  <span th:if="${spentPercent == null}">Nenhuma receita registrada no mês</span>
+                </div>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 18px">
+                  <tr>
+                    <td width="50%" valign="top" style="padding-right: 5px">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0B1440" style="background: #0b1440; border-radius: 18px">
+                        <tr>
+                          <td align="left" style="padding: 14px">
+                            <div style="font-size: 11px; color: #a9b0d6">
+                              <span style="color: #00d973; font-weight: 700">&#8601;</span>&nbsp; Receitas
+                            </div>
+                            <div style="margin-top: 4px; font-size: 16px; font-weight: 700; color: #eef1ff" th:text="${totalIncome}">R$ 9.200,00</div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="50%" valign="top" style="padding-left: 5px">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0B1440" style="background: #0b1440; border-radius: 18px">
+                        <tr>
+                          <td align="left" style="padding: 14px">
+                            <div style="font-size: 11px; color: #a9b0d6">
+                              <span style="color: #ff4b26; font-weight: 700">&#8599;</span>&nbsp; Despesas
+                            </div>
+                            <div style="margin-top: 4px; font-size: 16px; font-weight: 700; color: #eef1ff" th:text="${totalPayments}">R$ 5.717,10</div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Takeaway -->
+            <tr>
+              <td style="padding-top: 16px">
+                <table
+                  th:if="${balanceSign ge 0}"
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  bgcolor="#092E40"
+                  style="background: #092e40; border-radius: 22px"
+                >
+                  <tr>
+                    <td style="padding: 18px 22px">
+                      <div style="font-size: 14px; font-weight: 700; color: #00d973" th:text="${balanceSign gt 0} ? 'Você fechou o mês no azul' : 'Mês empatado'">
+                        Você fechou o mês no azul
+                      </div>
+                      <div style="margin-top: 4px; font-size: 13px; line-height: 19px; color: #c9d8e6">
+                        Continue registrando receitas e pagamentos para acompanhar a evolução mês a mês.
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <table
+                  th:if="${balanceSign lt 0}"
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  bgcolor="#3A172D"
+                  style="background: #3a172d; border-radius: 22px"
+                >
+                  <tr>
+                    <td style="padding: 18px 22px">
+                      <div style="font-size: 14px; font-weight: 700; color: #ff8a6e">As despesas passaram as receitas</div>
+                      <div style="margin-top: 4px; font-size: 13px; line-height: 19px; color: #e6cdd3">
+                        Vale revisar os pagamentos recorrentes no app e ver o que dá para ajustar no próximo mês.
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <table th:replace="~{email/fragments :: footer(reason='Você recebe este resumo todo dia 1º porque tem uma conta no Finance Dashboard.')}"></table>
               </td>
             </tr>
           </table>
-          <br />
-          <h2>💸 Expenses</h2>
-          <table
-            width="100%"
-            cellpadding="10"
-            cellspacing="0"
-            style="border: 1px solid #eee; border-radius: 8px"
-          >
-            <tr>
-              <td>Total Expenses</td>
-              <td align="right">
-                <strong th:text="${totalPayments}">R$ 3.200,00</strong>
-              </td>
-            </tr>
-          </table>
-          <br />
-          <h2>📈 Financial Result</h2>
-          <table
-            width="100%"
-            cellpadding="12"
-            cellspacing="0"
-            style="background: #f8fafc; border-radius: 8px"
-          >
-            <tr>
-              <td><strong>Balance</strong></td>
-              <td align="right">
-                <strong style="font-size: 18px" th:text="${balance}">
-                  R$ 1.800,00
-                </strong>
-              </td>
-            </tr>
-          </table>
-          <br />
-          <br />
-          <div style="background: #eff6ff; padding: 20px; border-radius: 8px">
-            <h3 style="margin-top: 0">💡 Tip</h3>
-            <p style="margin-bottom: 0">
-              Consistently tracking your income and expenses helps you identify
-              spending patterns and build healthier financial habits.
-            </p>
-          </div>
-          <br />
-          <p>Thank you for using our financial management platform.</p>
-          <p>Keep tracking. Keep growing. 🚀</p>
-        </td>
-      </tr>
-      <tr>
-        <td
-          style="
-            background: #f8fafc;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-          "
-        >
-          <small>
-            This is an automated message generated by the Finance Dashboard.
-          </small>
         </td>
       </tr>
     </table>

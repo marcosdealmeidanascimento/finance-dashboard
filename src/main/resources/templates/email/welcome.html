@@ -1,242 +1,194 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Welcome to Finance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="supported-color-schemes" content="dark" />
+    <title>Bem-vindo ao Finance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
   </head>
 
-  <body style="font-family: Arial, sans-serif">
-    <table
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      style="
-        max-width: 700px;
-        margin: auto;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-      "
-    >
+  <body style="margin: 0; padding: 0; background: #00041c">
+    <!-- Inbox preview text. -->
+    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: #00041c">
+      Sua conta está pronta. Veja como começar a organizar suas finanças.
+    </div>
+
+    <table role="presentation" width="100%" bgcolor="#00041C" cellpadding="0" cellspacing="0" border="0" style="background: #00041c">
       <tr>
-        <td style="background: #2563eb; color: white; padding: 30px">
-          <h1 style="margin: 0">🎉 Welcome to Finance Dashboard</h1>
-
-          <p style="margin-top: 10px">
-            Your account has been successfully created and is ready to use.
-          </p>
-        </td>
-      </tr>
-
-      <tr>
-        <td style="padding: 30px">
-          <p>Hello <strong th:text="${name}">John</strong>,</p>
-
-          <p>
-            Welcome to <strong>Finance Dashboard</strong>. Your account is now
-            active and ready to help you organize your finances, monitor your
-            income, track expenses, and gain visibility into your financial
-            habits.
-          </p>
-
-          <hr
-            style="border: none; border-top: 1px solid #eee; margin: 25px 0"
-          />
-
-          <h2>👤 Account Details</h2>
-
+        <td align="center" style="padding: 32px 16px">
           <table
+            role="presentation"
             width="100%"
-            cellpadding="10"
+            cellpadding="0"
             cellspacing="0"
-            style="border: 1px solid #eee; border-radius: 8px"
+            border="0"
+            style="max-width: 560px; font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif; color: #eef1ff"
           >
             <tr>
-              <td>Name</td>
-              <td align="right">
-                <strong th:text="${name}">John Doe</strong>
+              <td style="padding: 0 4px 24px 4px">
+                <table th:replace="~{email/fragments :: header}"></table>
               </td>
             </tr>
 
+            <!-- Hero -->
             <tr>
-              <td>Email</td>
-              <td align="right">
-                <strong th:text="${email}">john@email.com</strong>
-              </td>
-            </tr>
-          </table>
-
-          <br />
-
-          <h2>🚀 Available Features</h2>
-
-          <table
-            width="100%"
-            cellpadding="10"
-            cellspacing="0"
-            style="border: 1px solid #eee; border-radius: 8px"
-          >
-            <tr>
-              <td>💰 Register income and earnings</td>
-            </tr>
-
-            <tr>
-              <td>💳 Track upcoming payments</td>
-            </tr>
-
-            <tr>
-              <td>🔄 Manage recurring expenses automatically</td>
-            </tr>
-
-            <tr>
-              <td>📊 Monitor monthly financial summaries</td>
-            </tr>
-
-            <tr>
-              <td>📈 Track your financial balance over time</td>
-            </tr>
-
-            <tr>
-              <td>📧 Receive payment reminders and reports</td>
-            </tr>
-          </table>
-
-          <br />
-
-          <h2>🎯 Getting Started</h2>
-
-          <table
-            width="100%"
-            cellpadding="10"
-            cellspacing="0"
-            style="background: #f8fafc; border-radius: 8px"
-          >
-            <tr>
-              <td>
-                <strong>1.</strong> Add your first income source.
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <strong>2.</strong> Register your upcoming expenses and
-                payments.
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <strong>3.</strong> Mark recurring payments for automatic future
-                creation.
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <strong>4.</strong> Start monitoring your financial health
-                through summaries and reports.
-              </td>
-            </tr>
-          </table>
-
-          <br />
-
-          <h2>📊 Why Use Finance Dashboard?</h2>
-
-          <table
-            width="100%"
-            cellpadding="12"
-            cellspacing="0"
-            style="background: #eff6ff; border-radius: 8px"
-          >
-            <tr>
-              <td>
-                <strong style="font-size: 18px">
-                  Better visibility leads to better decisions
-                </strong>
-
-                <p style="margin-top: 10px; margin-bottom: 0">
-                  Keeping track of your finances helps identify spending
-                  patterns, understand cash flow, avoid missed payments, and
-                  build stronger financial habits.
-                </p>
-              </td>
-            </tr>
-          </table>
-
-          <br />
-
-          <h2>🔔 Automated Notifications</h2>
-
-          <table
-            width="100%"
-            cellpadding="12"
-            cellspacing="0"
-            style="background: #f0fdf4; border-radius: 8px"
-          >
-            <tr>
-              <td>
-                <strong>Payment Due Reminders</strong>
-
-                <p style="margin-top: 10px; margin-bottom: 0">
-                  Receive alerts before your payments reach their due dates.
+              <td bgcolor="#000831" style="background: #000831; border: 1px solid #005c4b; border-radius: 28px; padding: 32px 28px">
+                <span
+                  style="display: inline-block; background: #092e40; color: #00d973; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; padding: 5px 12px; border-radius: 999px"
+                >
+                  CONTA CRIADA
+                </span>
+                <h1 style="margin: 18px 0 0 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.8px; color: #ffffff">
+                  Bem-vindo, <span th:text="${firstName}">Marcos</span>!
+                </h1>
+                <p style="margin: 12px 0 0 0; font-size: 15px; line-height: 23px; color: #a9b0d6">
+                  Sua conta está pronta. A partir de agora você acompanha receitas, pagamentos e o saldo do mês em um só lugar.
                 </p>
               </td>
             </tr>
 
+            <!-- Account details -->
+            <tr>
+              <td style="padding-top: 16px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  bgcolor="#0A1238"
+                  style="background: #0a1238; border: 1px solid #18214d; border-radius: 22px"
+                >
+                  <tr>
+                    <td colspan="2" style="padding: 20px 22px 6px 22px; font-size: 13px; font-weight: 700; color: #99a0c4; letter-spacing: 0.6px">
+                      SEUS DADOS
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 22px; font-size: 14px; color: #99a0c4; border-bottom: 1px solid #141c45">Nome</td>
+                    <td align="right" style="padding: 12px 22px; font-size: 14px; font-weight: 600; color: #eef1ff; border-bottom: 1px solid #141c45" th:text="${name}">
+                      Marcos Nascimento
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 22px 20px 22px; font-size: 14px; color: #99a0c4">E-mail</td>
+                    <td align="right" style="padding: 12px 22px 20px 22px; font-size: 14px; font-weight: 600; color: #eef1ff" th:text="${email}">
+                      marcos@email.com
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Getting started -->
+            <tr>
+              <td style="padding-top: 16px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  bgcolor="#0A1238"
+                  style="background: #0a1238; border: 1px solid #18214d; border-radius: 22px"
+                >
+                  <tr>
+                    <td colspan="2" style="padding: 20px 22px 6px 22px; font-size: 13px; font-weight: 700; color: #99a0c4; letter-spacing: 0.6px">
+                      PRIMEIROS PASSOS
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="top" width="44" style="padding: 12px 0 8px 22px">
+                      <div
+                        style="width: 30px; height: 30px; line-height: 30px; border-radius: 15px; background: #092e40; color: #00d973; font-size: 14px; font-weight: 700; text-align: center"
+                      >
+                        1
+                      </div>
+                    </td>
+                    <td style="padding: 12px 22px 8px 4px">
+                      <div style="font-size: 15px; font-weight: 600; color: #eef1ff">Registre suas receitas</div>
+                      <div style="margin-top: 3px; font-size: 13px; line-height: 19px; color: #99a0c4">Salário, freelas e tudo o que entrou no mês.</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="top" width="44" style="padding: 12px 0 8px 22px">
+                      <div
+                        style="width: 30px; height: 30px; line-height: 30px; border-radius: 15px; background: #092e40; color: #00d973; font-size: 14px; font-weight: 700; text-align: center"
+                      >
+                        2
+                      </div>
+                    </td>
+                    <td style="padding: 12px 22px 8px 4px">
+                      <div style="font-size: 15px; font-weight: 600; color: #eef1ff">Cadastre seus pagamentos</div>
+                      <div style="margin-top: 3px; font-size: 13px; line-height: 19px; color: #99a0c4">
+                        Informe o vencimento e marque como recorrente o que se repete todo mês.
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="top" width="44" style="padding: 12px 0 20px 22px">
+                      <div
+                        style="width: 30px; height: 30px; line-height: 30px; border-radius: 15px; background: #092e40; color: #00d973; font-size: 14px; font-weight: 700; text-align: center"
+                      >
+                        3
+                      </div>
+                    </td>
+                    <td style="padding: 12px 22px 20px 4px">
+                      <div style="font-size: 15px; font-weight: 600; color: #eef1ff">Acompanhe o saldo</div>
+                      <div style="margin-top: 3px; font-size: 13px; line-height: 19px; color: #99a0c4">
+                        Veja quanto das suas receitas já está comprometido em cada mês.
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Notifications -->
+            <tr>
+              <td style="padding-top: 16px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  bgcolor="#0A1238"
+                  style="background: #0a1238; border: 1px solid #18214d; border-radius: 22px"
+                >
+                  <tr>
+                    <td style="padding: 20px 22px 6px 22px; font-size: 13px; font-weight: 700; color: #99a0c4; letter-spacing: 0.6px">
+                      AVISOS POR E-MAIL
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 22px; border-bottom: 1px solid #141c45">
+                      <div style="font-size: 15px; font-weight: 600; color: #eef1ff">Lembrete de vencimento</div>
+                      <div style="margin-top: 3px; font-size: 13px; line-height: 19px; color: #99a0c4">
+                        Um dia antes e no dia do vencimento de cada pagamento pendente.
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 22px 20px 22px">
+                      <div style="font-size: 15px; font-weight: 600; color: #eef1ff">Resumo do mês</div>
+                      <div style="margin-top: 3px; font-size: 13px; line-height: 19px; color: #99a0c4">
+                        Todo dia 1º, com receitas, despesas e o saldo do mês anterior.
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
             <tr>
               <td>
-                <strong>Monthly Financial Summary</strong>
-
-                <p style="margin-top: 10px; margin-bottom: 0">
-                  Receive a complete overview of your income, expenses, and
-                  balance every month.
-                </p>
+                <table th:replace="~{email/fragments :: footer(reason='Você recebeu este e-mail porque criou uma conta no Finance Dashboard.')}"></table>
               </td>
             </tr>
           </table>
-
-          <br />
-
-          <div
-            style="
-              background: #fefce8;
-              padding: 20px;
-              border-radius: 8px;
-            "
-          >
-            <h3 style="margin-top: 0">💡 Tip</h3>
-
-            <p style="margin-bottom: 0">
-              The sooner you start registering your income and expenses, the
-              more valuable your financial reports will become over time.
-            </p>
-          </div>
-
-          <br />
-
-          <p>
-            Thank you for joining <strong>Finance Dashboard</strong>.
-          </p>
-
-          <p>
-            We're excited to be part of your financial journey. 🚀
-          </p>
-        </td>
-      </tr>
-
-      <tr>
-        <td
-          style="
-            background: #f8fafc;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-          "
-        >
-          <small>
-            This is an automated message generated by the Finance Dashboard.
-          </small>
         </td>
       </tr>
     </table>

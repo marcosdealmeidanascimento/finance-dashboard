@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+  Shared pieces of the emails. Same identity as the app: deep indigo background, green accent,
+  Plus Jakarta Sans when the mail client loads web fonts. Everything is inline-styled tables
+  because mail clients drop <style> blocks, flexbox and SVG.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!-- Logo: the app's three rising bars, built from table cells so it renders without images. -->
+    <table th:fragment="header" role="presentation" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td valign="bottom" style="padding-right: 3px">
+          <div style="width: 6px; height: 10px; background: #7af0b5; border-radius: 2px; font-size: 0; line-height: 0">&nbsp;</div>
+        </td>
+        <td valign="bottom" style="padding-right: 3px">
+          <div style="width: 6px; height: 16px; background: #00d973; border-radius: 2px; font-size: 0; line-height: 0">&nbsp;</div>
+        </td>
+        <td valign="bottom" style="padding-right: 10px">
+          <div style="width: 6px; height: 22px; background: #00a85a; border-radius: 2px; font-size: 0; line-height: 0">&nbsp;</div>
+        </td>
+        <td
+          valign="middle"
+          style="font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; color: #eef1ff; letter-spacing: -0.2px"
+        >
+          Finance Dashboard
+        </td>
+      </tr>
+    </table>
+
+    <table th:fragment="footer(reason)" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td
+          align="center"
+          style="padding: 28px 16px 0 16px; font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; color: #8088b0"
+        >
+          <span th:text="${reason}">Você recebeu este e-mail porque tem uma conta no Finance Dashboard.</span><br />
+          Mensagem automática, não é preciso responder.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
